@@ -1,1 +1,230 @@
- 
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Call Metrics Dashboard</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-100 text-gray-800 p-6">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-2xl font-bold mb-6">Call Metrics Dashboard</h1>
+
+        <!-- 🔍 Filters section: responsive single-line layout -->
+        <div class="mb-6 flex flex-nowrap gap-2 items-center w-full">
+
+
+            <!-- 📦 Customer input -->
+            <input id="customerInput" placeholder="Customer" class="px-3 py-2 border rounded min-w-0 flex-1" />
+
+            <!-- 📦 Supplier input -->
+            <input id="supplierInput" placeholder="Supplier" class="px-3 py-2 border rounded min-w-0 flex-1" />
+
+            <!-- 📦 Destination input -->
+            <input id="destinationInput" placeholder="Destination" class="px-3 py-2 border rounded min-w-0 flex-1" />
+
+            <!-- 🕓 From date input -->
+            <input id="fromDate" type="date" class="px-3 py-2 border rounded min-w-0 flex-1" />
+
+            <!-- ⏰ From time with control buttons -->
+            <div class="flex flex-col items-center group relative min-w-0 flex-1">
+                <input id="fromTime" type="time" step="1" class="px-3 py-2 border rounded w-full" />
+                <div
+                    class="absolute left-1/2 -translate-x-1/2 top-full mt-1 flex gap-1 opacity-0 pointer-events-none group-focus-within:opacity-100 group-focus-within:pointer-events-auto transition-opacity duration-200"
+                >
+                    <button onclick="adjustTime('fromTime', -1)" class="text-sm px-2 py-1 bg-gray-200 rounded">−</button>
+                    <button onclick="setNow('fromTime')" class="text-sm px-2 py-1 bg-gray-200 rounded">N</button>
+                    <button onclick="setZero('fromTime')" class="text-sm px-2 py-1 bg-gray-200 rounded">Z</button>
+                    <button onclick="adjustTime('fromTime', 1)" class="text-sm px-2 py-1 bg-gray-200 rounded">+</button>
+                </div>
+            </div>
+
+            <!-- 🕓 To date input -->
+            <input id="toDate" type="date" class="px-3 py-2 border rounded min-w-0 flex-1" />
+
+            <!-- ⏰ To time with control buttons -->
+            <div class="flex flex-col items-center group relative min-w-0 flex-1">
+                <input id="toTime" type="time" step="1" class="px-3 py-2 border rounded w-full" />
+                <div
+                    class="absolute left-1/2 -translate-x-1/2 top-full mt-1 flex gap-1 opacity-0 pointer-events-none group-focus-within:opacity-100 group-focus-within:pointer-events-auto transition-opacity duration-200"
+                >
+                    <button onclick="adjustTime('toTime', -1)" class="text-sm px-2 py-1 bg-gray-200 rounded">−</button>
+                    <button onclick="setNow('toTime')" class="text-sm px-2 py-1 bg-gray-200 rounded">N</button>
+                    <button onclick="setZero('toTime')" class="text-sm px-2 py-1 bg-gray-200 rounded">Z</button>
+                    <button onclick="adjustTime('toTime', 1)" class="text-sm px-2 py-1 bg-gray-200 rounded">+</button>
+                </div>
+            </div>
+
+            <!-- 🔍 Search button -->
+            <button
+                onclick="loadMetrics()"
+                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex-shrink-0"
+            >
+                Search
+            </button>
+
+            <!-- 📁 Placeholder CDR button -->
+            <button
+                class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex-shrink-0"
+                title="Coming soon"
+            >
+                CDR
+            </button>
+            <!-- Summary Table Button -->
+            <div class="fixed bottom-4 left-4">
+                <button
+                    onclick="loadMetrics(true)"
+                    class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-900"
+                >
+                    Summary Table
+                </button>
+            </div>
+        </div>
+
+            <!-- Table -->
+            <div class="overflow-auto bg-white rounded shadow">
+                <table class="min-w-full table-auto">
+                    <thead class="bg-gray-200">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Time</th>
+                            <th class="px-4 py-2 text-left">Customer</th>
+                            <th class="px-4 py-2 text-left">Supplier</th>
+                            <th class="px-4 py-2 text-left">Destination</th>
+                            <th class="px-4 py-2 text-left">ACD</th>
+                            <th class="px-4 py-2 text-left">ASR</th>
+                            <th class="px-4 py-2 text-left">Total Min</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-gray-100">
+                        <!-- Filled by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- JavaScript -->
+        <script>
+            // 🕓 Auto-fill time range on load (last 24 hours)
+            function setDefaultDateRange() {
+                const now = new Date();
+                const from = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+                const toDate = now.toISOString().slice(0, 10);
+                const toTime = now.toISOString().slice(11, 19);
+                const fromDate = from.toISOString().slice(0, 10);
+                const fromTime = from.toISOString().slice(11, 19);
+
+                document.getElementById("fromDate").value = fromDate;
+                document.getElementById("fromTime").value = fromTime;
+                document.getElementById("toDate").value = toDate;
+                document.getElementById("toTime").value = toTime;
+            }
+
+            // ➕➖⏰ Button handlers for time fields
+            function adjustTime(id, hoursDelta) {
+                const timeInput = document.getElementById(id);
+                const dateInput = document.getElementById(id === "fromTime" ? "fromDate" : "toDate");
+
+                let [h, m, s] = timeInput.value.split(':').map(Number);
+                if (isNaN(h)) h = 0;
+                if (isNaN(m)) m = 0;
+                if (isNaN(s)) s = 0;
+
+                const currentDate = new Date(dateInput.value + 'T' + timeInput.value + 'Z'); // UTC
+                currentDate.setUTCHours(currentDate.getUTCHours() + hoursDelta);
+
+                // Update the date and time based on the result
+                timeInput.value = currentDate.toISOString().substr(11, 8);
+                dateInput.value = currentDate.toISOString().substr(0, 10);
+            }
+
+            function setNow(id) {
+                const timeInput = document.getElementById(id);
+                const dateInput = document.getElementById(id === "fromTime" ? "fromDate" : "toDate");
+
+                const now = new Date();
+
+                const nowTime = now.toISOString().substr(11, 8); // HH:MM:SS
+                const nowDate = now.toISOString().substr(0, 10); // YYYY-MM-DD
+
+                timeInput.value = nowTime;
+                dateInput.value = nowDate;
+            }
+
+            function setZero(id) {
+                const input = document.getElementById(id);
+                input.value = "00:00:00";
+            }
+
+            // 📊 Load filtered metrics from backend
+            function loadMetrics(showTable = false) {
+                const customer = document.getElementById("customerInput").value.trim();
+                const supplier = document.getElementById("supplierInput").value.trim();
+                const destination = document.getElementById("destinationInput").value.trim();
+
+                const fromDate = document.getElementById("fromDate").value;
+                const fromTime = document.getElementById("fromTime").value;
+                const toDate = document.getElementById("toDate").value;
+                const toTime = document.getElementById("toTime").value;
+
+                let url = "/api/metrics?";
+                if (customer) url += `customer=${encodeURIComponent(customer)}&`;
+                if (supplier) url += `supplier=${encodeURIComponent(supplier)}&`;
+                if (destination) url += `destination=${encodeURIComponent(destination)}&`;
+                if (fromDate && fromTime) url += `from=${fromDate}T${fromTime}&`;
+                if (toDate && toTime) url += `to=${toDate}T${toTime}&`;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        const table = document.getElementById("tableBody");
+
+                        if (!showTable) {
+                            table.innerHTML = ""; // Don't display anything
+                            return;
+                        }
+
+                        table.innerHTML = "";
+
+                        if (!Array.isArray(data)) {
+                            table.innerHTML = `<tr><td colspan="7" class="text-red-600 px-4 py-2">Error loading data</td></tr>`;
+                            return;
+                        }
+
+                        if (data.length === 0) {
+                            table.innerHTML = `<tr><td colspan="7" class="text-gray-500 px-4 py-2">No data found</td></tr>`;
+                            return;
+                        }
+
+                        data.forEach(row => {
+                            const acd = row.seconds && row.start_nuber ? (row.seconds / row.start_nuber).toFixed(1) : 0;
+                            const asr = row.start_attempt ? Math.round((row.start_nuber / row.start_attempt) * 100) : 0;
+                            const totalMin = Math.round(row.seconds / 60);
+
+                            table.innerHTML += `
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-2">${row.time}</td>
+                                    <td class="px-4 py-2">${row.customer}</td>
+                                    <td class="px-4 py-2">${row.supplier}</td>
+                                    <td class="px-4 py-2">${row.destination}</td>
+                                    <td class="px-4 py-2">${acd}</td>
+                                    <td class="px-4 py-2">${asr}%</td>
+                                    <td class="px-4 py-2">${totalMin}</td>
+                                </tr>
+                            `;
+                        });
+                    })
+                    .catch(error => {
+                        const table = document.getElementById("tableBody");
+                        if (showTable) {
+                            table.innerHTML = `<tr><td colspan="7" class="text-red-600 px-4 py-2">Request failed</td></tr>`;
+                        }
+                        console.error("Fetch error:", error);
+                    });
+            }
+
+            // 🟢 Init on page load
+            setDefaultDateRange();
+            loadMetrics();
+        </script>
+    </body>
+</html>
