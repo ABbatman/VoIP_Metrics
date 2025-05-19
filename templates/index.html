@@ -1,230 +1,429 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Call Metrics Dashboard</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-    </head>
-    <body class="bg-gray-100 text-gray-800 p-6">
-        <div class="max-w-7xl mx-auto">
-            <h1 class="text-2xl font-bold mb-6">Call Metrics Dashboard</h1>
+<head>
+  <meta charset="UTF-8" />
+  <title>Call Metrics Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-grid.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css" />
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.noStyle.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 p-6">
+  <div class="w-full mx-auto px-4">
+    <h1 class="text-2xl font-bold mb-6">Monitoring by Burcovschi</h1>
 
-        <!-- 🔍 Filters section: responsive single-line layout -->
-        <div class="mb-6 flex flex-nowrap gap-2 items-center w-full">
+    <!-- Filters Section -->
+    <div class="w-full overflow-visible">
+      <div class="flex items-center gap-2 w-full justify-start flex-nowrap overflow-visible max-w-full mx-auto px-2">
 
+        <!-- Filter fields -->
+        <input id="customerInput" placeholder="Customer" class="px-3 py-2 border rounded flex-grow min-w-0 basis-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 my-1" />
+        <input id="supplierInput" placeholder="Supplier" class="px-3 py-2 border rounded flex-grow min-w-0 basis-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 my-1" />
+        <input id="destinationInput" placeholder="Destination" class="px-3 py-2 border rounded flex-grow min-w-0 basis-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 my-1" />
+        <input id="fromDate" type="date" class="px-3 py-2 border rounded flex-grow min-w-0 basis-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 my-1" />
 
-            <!-- 📦 Customer input -->
-            <input id="customerInput" placeholder="Customer" class="px-3 py-2 border rounded min-w-0 flex-1" />
-
-            <!-- 📦 Supplier input -->
-            <input id="supplierInput" placeholder="Supplier" class="px-3 py-2 border rounded min-w-0 flex-1" />
-
-            <!-- 📦 Destination input -->
-            <input id="destinationInput" placeholder="Destination" class="px-3 py-2 border rounded min-w-0 flex-1" />
-
-            <!-- 🕓 From date input -->
-            <input id="fromDate" type="date" class="px-3 py-2 border rounded min-w-0 flex-1" />
-
-            <!-- ⏰ From time with control buttons -->
-            <div class="flex flex-col items-center group relative min-w-0 flex-1">
-                <input id="fromTime" type="time" step="1" class="px-3 py-2 border rounded w-full" />
-                <div
-                    class="absolute left-1/2 -translate-x-1/2 top-full mt-1 flex gap-1 opacity-0 pointer-events-none group-focus-within:opacity-100 group-focus-within:pointer-events-auto transition-opacity duration-200"
-                >
-                    <button onclick="adjustTime('fromTime', -1)" class="text-sm px-2 py-1 bg-gray-200 rounded">−</button>
-                    <button onclick="setNow('fromTime')" class="text-sm px-2 py-1 bg-gray-200 rounded">N</button>
-                    <button onclick="setZero('fromTime')" class="text-sm px-2 py-1 bg-gray-200 rounded">Z</button>
-                    <button onclick="adjustTime('fromTime', 1)" class="text-sm px-2 py-1 bg-gray-200 rounded">+</button>
-                </div>
-            </div>
-
-            <!-- 🕓 To date input -->
-            <input id="toDate" type="date" class="px-3 py-2 border rounded min-w-0 flex-1" />
-
-            <!-- ⏰ To time with control buttons -->
-            <div class="flex flex-col items-center group relative min-w-0 flex-1">
-                <input id="toTime" type="time" step="1" class="px-3 py-2 border rounded w-full" />
-                <div
-                    class="absolute left-1/2 -translate-x-1/2 top-full mt-1 flex gap-1 opacity-0 pointer-events-none group-focus-within:opacity-100 group-focus-within:pointer-events-auto transition-opacity duration-200"
-                >
-                    <button onclick="adjustTime('toTime', -1)" class="text-sm px-2 py-1 bg-gray-200 rounded">−</button>
-                    <button onclick="setNow('toTime')" class="text-sm px-2 py-1 bg-gray-200 rounded">N</button>
-                    <button onclick="setZero('toTime')" class="text-sm px-2 py-1 bg-gray-200 rounded">Z</button>
-                    <button onclick="adjustTime('toTime', 1)" class="text-sm px-2 py-1 bg-gray-200 rounded">+</button>
-                </div>
-            </div>
-
-            <!-- 🔍 Search button -->
-            <button
-                onclick="loadMetrics()"
-                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex-shrink-0"
-            >
-                Search
-            </button>
-
-            <!-- 📁 Placeholder CDR button -->
-            <button
-                class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex-shrink-0"
-                title="Coming soon"
-            >
-                CDR
-            </button>
-            <!-- Summary Table Button -->
-            <div class="fixed bottom-4 left-4">
-                <button
-                    onclick="loadMetrics(true)"
-                    class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-900"
-                >
-                    Summary Table
-                </button>
+        <!-- From time -->
+        <div class="flex flex-col flex-grow min-w-0 basis-0 my-1 relative">
+            <input
+                id="fromTime"
+                type="time"
+                step="1"
+                class="px-3 py-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                onfocus="showTimeControls('fromTimeControls')"
+                onblur="hideTimeControls('fromTimeControls')"
+            />
+            <div id="fromTimeControls" class="flex gap-1 hidden mt-1 absolute left-1/2 -translate-x-1/2 top-full z-10">
+                <button onclick="adjustTime('fromTime', -1)" class="text-sm px-2 py-1 bg-gray-200 rounded">−</button>
+                <button onclick="setNow('fromTime')" class="text-sm px-2 py-1 bg-gray-200 rounded">N</button>
+                <button onclick="setZero('fromTime')" class="text-sm px-2 py-1 bg-gray-200 rounded">Z</button>
+                <button onclick="adjustTime('fromTime', 1)" class="text-sm px-2 py-1 bg-gray-200 rounded">+</button>
             </div>
         </div>
 
-            <!-- Table -->
-            <div class="overflow-auto bg-white rounded shadow">
-                <table class="min-w-full table-auto">
-                    <thead class="bg-gray-200">
-                        <tr>
-                            <th class="px-4 py-2 text-left">Time</th>
-                            <th class="px-4 py-2 text-left">Customer</th>
-                            <th class="px-4 py-2 text-left">Supplier</th>
-                            <th class="px-4 py-2 text-left">Destination</th>
-                            <th class="px-4 py-2 text-left">ACD</th>
-                            <th class="px-4 py-2 text-left">ASR</th>
-                            <th class="px-4 py-2 text-left">Total Min</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody" class="divide-y divide-gray-100">
-                        <!-- Filled by JS -->
-                    </tbody>
-                </table>
+        <!-- To date -->
+        <input id="toDate" type="date" class="px-3 py-2 border rounded flex-grow min-w-0 basis-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 my-1" />
+
+        <!-- To time -->
+        <div class="flex flex-col flex-grow min-w-0 basis-0 my-1 relative">
+            <input
+                id="toTime"
+                type="time"
+                step="1"
+                class="px-3 py-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                onfocus="showTimeControls('toTimeControls')"
+                onblur="hideTimeControls('toTimeControls')"
+            />
+            <div id="toTimeControls" class="flex gap-1 hidden mt-1 absolute left-1/2 -translate-x-1/2 top-full z-10">
+                <button onclick="adjustTime('toTime', -1)" class="text-sm px-2 py-1 bg-gray-200 rounded">−</button>
+                <button onclick="setNow('toTime')" class="text-sm px-2 py-1 bg-gray-200 rounded">N</button>
+                <button onclick="setZero('toTime')" class="text-sm px-2 py-1 bg-gray-200 rounded">Z</button>
+                <button onclick="adjustTime('toTime', 1)" class="text-sm px-2 py-1 bg-gray-200 rounded">+</button>
             </div>
         </div>
 
-        <!-- JavaScript -->
-        <script>
-            // 🕓 Auto-fill time range on load (last 24 hours)
-            function setDefaultDateRange() {
-                const now = new Date();
-                const from = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
-                const toDate = now.toISOString().slice(0, 10);
-                const toTime = now.toISOString().slice(11, 19);
-                const fromDate = from.toISOString().slice(0, 10);
-                const fromTime = from.toISOString().slice(11, 19);
+        <!-- Buttons -->
+        <button onclick="loadMetrics()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex-grow-0 flex-shrink-0 my-1">Find</button>
+        <button class="bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900 flex-grow-0 flex-shrink-0 my-1" title="Coming soon">CDR</button>
+      </div>
+    </div>
 
-                document.getElementById("fromDate").value = fromDate;
-                document.getElementById("fromTime").value = fromTime;
-                document.getElementById("toDate").value = toDate;
-                document.getElementById("toTime").value = toTime;
-            }
+    <!-- Summary Table -->
+    <div id="summaryTable" class="bg-white rounded shadow hidden w-full mt-6">
+      <table class="w-full table-auto">
+        <thead class="bg-gray-200 text-xs">
+          <tr>
+            <th class="px-2 py-1 text-left" rowspan="2">Customer</th>
+            <th class="px-2 py-1 text-left" rowspan="2">Destination</th>
 
-            // ➕➖⏰ Button handlers for time fields
-            function adjustTime(id, hoursDelta) {
-                const timeInput = document.getElementById(id);
-                const dateInput = document.getElementById(id === "fromTime" ? "fromDate" : "toDate");
+            <th class="px-2 py-1 text-center" colspan="3">Min</th>
+            <th class="px-2 py-1 text-center" colspan="3">ACD</th>
+            <th class="px-2 py-1 text-center" colspan="3">ASR</th>
+            <th class="px-2 py-1 text-center" colspan="3">SCall</th>
+            <th class="px-2 py-1 text-center" colspan="3">TCall</th>
+            <th class="px-2 py-1 text-center" colspan="3">PDD</th>
+            <th class="px-2 py-1 text-center" colspan="3">ATime</th>
+            <th class="px-2 py-1 text-center" colspan="3">ADur</th>
+          </tr>
+          <tr>
+            <th class="px-2 py-1">Now</th>
+            <th class="px-2 py-1">Y</th>
+            <th class="px-2 py-1">%</th>
 
-                let [h, m, s] = timeInput.value.split(':').map(Number);
-                if (isNaN(h)) h = 0;
-                if (isNaN(m)) m = 0;
-                if (isNaN(s)) s = 0;
+            <th class="px-2 py-1">Now</th>
+            <th class="px-2 py-1">Y</th>
+            <th class="px-2 py-1">%</th>
 
-                const currentDate = new Date(dateInput.value + 'T' + timeInput.value + 'Z'); // UTC
-                currentDate.setUTCHours(currentDate.getUTCHours() + hoursDelta);
+            <th class="px-2 py-1">Now</th>
+            <th class="px-2 py-1">Y</th>
+            <th class="px-2 py-1">%</th>
 
-                // Update the date and time based on the result
-                timeInput.value = currentDate.toISOString().substr(11, 8);
-                dateInput.value = currentDate.toISOString().substr(0, 10);
-            }
+            <th class="px-2 py-1">Now</th>
+            <th class="px-2 py-1">Y</th>
+            <th class="px-2 py-1">%</th>
 
-            function setNow(id) {
-                const timeInput = document.getElementById(id);
-                const dateInput = document.getElementById(id === "fromTime" ? "fromDate" : "toDate");
+            <th class="px-2 py-1">Now</th>
+            <th class="px-2 py-1">Y</th>
+            <th class="px-2 py-1">%</th>
 
-                const now = new Date();
+            <th class="px-2 py-1">Now</th>
+            <th class="px-2 py-1">Y</th>
+            <th class="px-2 py-1">%</th>
 
-                const nowTime = now.toISOString().substr(11, 8); // HH:MM:SS
-                const nowDate = now.toISOString().substr(0, 10); // YYYY-MM-DD
+            <th class="px-2 py-1">Now</th>
+            <th class="px-2 py-1">Y</th>
+            <th class="px-2 py-1">%</th>
 
-                timeInput.value = nowTime;
-                dateInput.value = nowDate;
-            }
+            <th class="px-2 py-1">Now</th>
+            <th class="px-2 py-1">Y</th>
+            <th class="px-2 py-1">%</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody" class="divide-y divide-gray-100"></tbody>
+      </table>
+    </div>
 
-            function setZero(id) {
-                const input = document.getElementById(id);
-                input.value = "00:00:00";
-            }
+    <button onclick="loadMetricsWithComparison(true)" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-10 ml-0 block">Summary Table</button>
+  </div>
 
-            // 📊 Load filtered metrics from backend
-            function loadMetrics(showTable = false) {
-                const customer = document.getElementById("customerInput").value.trim();
-                const supplier = document.getElementById("supplierInput").value.trim();
-                const destination = document.getElementById("destinationInput").value.trim();
+<script>
 
-                const fromDate = document.getElementById("fromDate").value;
-                const fromTime = document.getElementById("fromTime").value;
-                const toDate = document.getElementById("toDate").value;
-                const toTime = document.getElementById("toTime").value;
+  // Merge current and yesterday metrics by customer + destination and calculate percentage change
+  function mergeAndCompare(current, yesterday) {
+  const yesterdayMap = {};
+  yesterday.forEach(row => {
+    const key = `${row.customer}|${row.destination}`;
+    yesterdayMap[key] = row;
+  });
 
-                let url = "/api/metrics?";
-                if (customer) url += `customer=${encodeURIComponent(customer)}&`;
-                if (supplier) url += `supplier=${encodeURIComponent(supplier)}&`;
-                if (destination) url += `destination=${encodeURIComponent(destination)}&`;
-                if (fromDate && fromTime) url += `from=${fromDate}T${fromTime}&`;
-                if (toDate && toTime) url += `to=${toDate}T${toTime}&`;
+  const merged = [];
 
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        const table = document.getElementById("tableBody");
+  current.forEach(row => {
+    const key = `${row.customer}|${row.destination}`;
+    const yRow = yesterdayMap[key] || {};
 
-                        if (!showTable) {
-                            table.innerHTML = ""; // Don't display anything
-                            return;
-                        }
+    const makePct = (curr, prev) => {
+      if (!prev || prev === 0) return 0;
+      return +(((curr - prev) / prev) * 100).toFixed(1);
+    };
 
-                        table.innerHTML = "";
+    merged.push({
+      customer: row.customer,
+      destination: row.destination,
 
-                        if (!Array.isArray(data)) {
-                            table.innerHTML = `<tr><td colspan="7" class="text-red-600 px-4 py-2">Error loading data</td></tr>`;
-                            return;
-                        }
+      Min: row.Min,
+      YMin: yRow.Min || 0,
+      MinPct: makePct(row.Min, yRow.Min),
 
-                        if (data.length === 0) {
-                            table.innerHTML = `<tr><td colspan="7" class="text-gray-500 px-4 py-2">No data found</td></tr>`;
-                            return;
-                        }
+      ACD: row.ACD,
+      YACD: yRow.ACD || 0,
+      ACDPct: makePct(row.ACD, yRow.ACD),
 
-                        data.forEach(row => {
-                            const acd = row.seconds && row.start_nuber ? (row.seconds / row.start_nuber).toFixed(1) : 0;
-                            const asr = row.start_attempt ? Math.round((row.start_nuber / row.start_attempt) * 100) : 0;
-                            const totalMin = Math.round(row.seconds / 60);
+      ASR: row.ASR,
+      YASR: yRow.ASR || 0,
+      ASRPct: makePct(row.ASR, yRow.ASR),
 
-                            table.innerHTML += `
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-4 py-2">${row.time}</td>
-                                    <td class="px-4 py-2">${row.customer}</td>
-                                    <td class="px-4 py-2">${row.supplier}</td>
-                                    <td class="px-4 py-2">${row.destination}</td>
-                                    <td class="px-4 py-2">${acd}</td>
-                                    <td class="px-4 py-2">${asr}%</td>
-                                    <td class="px-4 py-2">${totalMin}</td>
-                                </tr>
-                            `;
-                        });
-                    })
-                    .catch(error => {
-                        const table = document.getElementById("tableBody");
-                        if (showTable) {
-                            table.innerHTML = `<tr><td colspan="7" class="text-red-600 px-4 py-2">Request failed</td></tr>`;
-                        }
-                        console.error("Fetch error:", error);
-                    });
-            }
+      SCall: row.SCall,
+      YSCall: yRow.SCall || 0,
+      SCallPct: makePct(row.SCall, yRow.SCall),
 
-            // 🟢 Init on page load
-            setDefaultDateRange();
-            loadMetrics();
-        </script>
-    </body>
+      TCall: row.TCall,
+      YTCall: yRow.TCall || 0,
+      TCallPct: makePct(row.TCall, yRow.TCall),
+
+      PDD: row.PDD,
+      YPDD: yRow.PDD || 0,
+      PDDPct: makePct(row.PDD, yRow.PDD),
+
+      ATime: row.ATime,
+      YATime: yRow.ATime || 0,
+      ATimePct: makePct(row.ATime, yRow.ATime),
+
+      ADur: row.ADur,
+      YADur: yRow.ADur || 0,
+      ADurPct: makePct(row.ADur, yRow.ADur)
+    });
+  });
+
+  return merged;
+}
+
+// Group data (current or yesterday) by customer + destination
+function groupByCustomerDestination(data) {
+  const grouped = {};
+
+  data.forEach(row => {
+    const key = `${row.customer}|${row.destination}`;
+
+    if (!grouped[key]) {
+      grouped[key] = {
+        customer: row.customer,
+        destination: row.destination,
+        seconds: 0,
+        start_nuber: 0,
+        start_attempt: 0,
+        disc_reason: 0,
+        pdd_total: 0,
+        answer_time_total: 0,
+        duration_total: 0,
+        count: 0
+      };
+    }
+
+    grouped[key].seconds += row.seconds || 0;
+    grouped[key].start_nuber += row.start_nuber || 0;
+    grouped[key].start_attempt += row.start_attempt || 0;
+    grouped[key].disc_reason += row.disc_reason || 0;
+    grouped[key].pdd_total += row.pdd || 0;
+    grouped[key].answer_time_total += row.answer_time || 0;
+    grouped[key].duration_total += row.avg_duration || 0;
+    grouped[key].count += 1;
+  });
+
+  // Convert grouped objects into array with calculated metrics
+  const result = [];
+
+  for (const key in grouped) {
+    const g = grouped[key];
+
+    result.push({
+      customer: g.customer,
+      destination: g.destination,
+      Min: +(g.seconds / 60).toFixed(1),
+      ACD: g.start_nuber ? +(g.seconds / g.start_nuber).toFixed(2) : 0,
+      ASR: g.start_attempt ? +(g.start_nuber / g.start_attempt * 100).toFixed(1) : 0,
+      SCall: g.start_nuber,
+      TCall: g.start_attempt,
+      PDD: +(g.pdd_total / g.count).toFixed(1),
+      ATime: +(g.answer_time_total / g.count).toFixed(1),
+      ADur: +(g.duration_total / g.count).toFixed(1)
+    });
+  }
+
+  return result;
+}
+
+function loadMetricsWithComparison(showTable = false) {
+    // Get input values from filters
+    const customer = document.getElementById("customerInput").value.trim();
+    const supplier = document.getElementById("supplierInput").value.trim();
+    const destination = document.getElementById("destinationInput").value.trim();
+    const from = document.getElementById("fromDate").value + 'T' + document.getElementById("fromTime").value;
+    const to = document.getElementById("toDate").value + 'T' + document.getElementById("toTime").value;
+
+    // Calculate yesterday's time range by shifting -24h
+    const fromDateObj = new Date(from);
+    const toDateObj = new Date(to);
+    const from_y = new Date(fromDateObj.getTime() - 24 * 60 * 60 * 1000).toISOString();
+    const to_y = new Date(toDateObj.getTime() - 24 * 60 * 60 * 1000).toISOString();
+
+    // Build query parameters for both periods
+    const paramsToday = new URLSearchParams({ customer, supplier, destination, from, to });
+    const paramsYesterday = new URLSearchParams({ customer, supplier, destination, from: from_y, to: to_y });
+
+    // Fetch both datasets in parallel
+    Promise.all([
+      fetch(`/api/metrics?${paramsToday.toString()}`).then(res => res.json()),
+      fetch(`/api/metrics?${paramsYesterday.toString()}`).then(res => res.json())
+    ])
+    .then(([current, yesterday]) => {
+
+    // Output raw results
+    const groupedCurrent = groupByCustomerDestination(current);
+    const groupedYesterday = groupByCustomerDestination(yesterday);
+    console.log("Grouped Current:", groupedCurrent);
+    console.log("Grouped Yesterday:", groupedYesterday);
+    const finalTable = mergeAndCompare(groupedCurrent, groupedYesterday);
+    console.log("Final Table:", finalTable);
+
+    // Render final table into the HTML summaryTable
+    const table = document.getElementById("tableBody");
+    table.innerHTML = ""; // clear previous rows
+
+    finalTable.forEach(row => {
+      table.innerHTML += `
+        <tr class="hover:bg-gray-50">
+          <td class="px-2 py-1">${row.customer}</td>
+          <td class="px-2 py-1">${row.destination}</td>
+
+          <td class="px-2 py-1">${row.Min}</td>
+          <td class="px-2 py-1">${row.YMin}</td>
+          <td class="px-2 py-1">${row.MinPct}%</td>
+
+          <td class="px-2 py-1">${row.ACD}</td>
+          <td class="px-2 py-1">${row.YACD}</td>
+          <td class="px-2 py-1">${row.ACDPct}%</td>
+
+          <td class="px-2 py-1">${row.ASR}</td>
+          <td class="px-2 py-1">${row.YASR}</td>
+          <td class="px-2 py-1">${row.ASRPct}%</td>
+
+          <td class="px-2 py-1">${row.SCall}</td>
+          <td class="px-2 py-1">${row.YSCall}</td>
+          <td class="px-2 py-1">${row.SCallPct}%</td>
+
+          <td class="px-2 py-1">${row.TCall}</td>
+          <td class="px-2 py-1">${row.YTCall}</td>
+          <td class="px-2 py-1">${row.TCallPct}%</td>
+
+          <td class="px-2 py-1">${row.PDD}</td>
+          <td class="px-2 py-1">${row.YPDD}</td>
+          <td class="px-2 py-1">${row.PDDPct}%</td>
+
+          <td class="px-2 py-1">${row.ATime}</td>
+          <td class="px-2 py-1">${row.YATime}</td>
+          <td class="px-2 py-1">${row.ATimePct}%</td>
+
+          <td class="px-2 py-1">${row.ADur}</td>
+          <td class="px-2 py-1">${row.YADur}</td>
+          <td class="px-2 py-1">${row.ADurPct}%</td>
+        </tr>
+      `;
+    });
+
+// Show the table block if requested
+if (showTable) {
+  document.getElementById("summaryTable").classList.remove("hidden");
+}
+    
+
+    if (showTable) {
+      document.getElementById("summaryTable").classList.remove("hidden");
+    }
+
+      // Next step: group and merge data here
+      })
+      .catch(error => {
+        console.error("Error loading metrics:", error);
+      });
+    }  
+    function showTimeControls(id) {
+      document.getElementById(id).classList.remove("hidden");
+    }
+
+    function hideTimeControls(id) {
+      setTimeout(() => {
+        document.getElementById(id).classList.add("hidden");
+      }, 200);
+    }
+
+    function adjustTime(id, hoursDelta) {
+      const timeInput = document.getElementById(id);
+      const dateInput = document.getElementById(id === "fromTime" ? "fromDate" : "toDate");
+      const currentDate = new Date(dateInput.value + 'T' + timeInput.value + 'Z');
+      currentDate.setUTCHours(currentDate.getUTCHours() + hoursDelta);
+      timeInput.value = currentDate.toISOString().substr(11, 8);
+      dateInput.value = currentDate.toISOString().substr(0, 10);
+    }
+
+    function setNow(id) {
+      const now = new Date();
+      document.getElementById(id).value = now.toISOString().substr(11, 8);
+      document.getElementById(id === "fromTime" ? "fromDate" : "toDate").value = now.toISOString().substr(0, 10);
+    }
+
+    function setZero(id) {
+      document.getElementById(id).value = "00:00:00";
+    }
+
+    function setDefaultDateRange() {
+      const now = new Date();
+      const from = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      document.getElementById("fromDate").value = from.toISOString().slice(0, 10);
+      document.getElementById("fromTime").value = from.toISOString().slice(11, 19);
+      document.getElementById("toDate").value = now.toISOString().slice(0, 10);
+      document.getElementById("toTime").value = now.toISOString().slice(11, 19);
+    }
+
+    function loadMetrics(showTable = false) {
+      const params = new URLSearchParams({
+        customer: document.getElementById("customerInput").value.trim(),
+        supplier: document.getElementById("supplierInput").value.trim(),
+        destination: document.getElementById("destinationInput").value.trim(),
+        from: document.getElementById("fromDate").value + 'T' + document.getElementById("fromTime").value,
+        to: document.getElementById("toDate").value + 'T' + document.getElementById("toTime").value
+      });
+
+      fetch(`/api/metrics?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+          const table = document.getElementById("tableBody");
+          table.innerHTML = "";
+
+          if (!Array.isArray(data) || data.length === 0) {
+            table.innerHTML = `<tr><td colspan="7" class="px-4 py-2 text-gray-500">${Array.isArray(data) ? "No data found" : "Error loading data"}</td></tr>`;
+            return;
+          }
+
+          data.forEach(row => {
+            const acd = row.seconds && row.start_nuber ? (row.seconds / row.start_nuber).toFixed(1) : 0;
+            const asr = row.start_attempt ? Math.round((row.start_nuber / row.start_attempt) * 100) : 0;
+            const totalMin = Math.round(row.seconds / 60);
+
+            table.innerHTML += `
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-2">${row.time}</td>
+                <td class="px-4 py-2">${row.customer}</td>
+                <td class="px-4 py-2">${row.supplier}</td>
+                <td class="px-4 py-2">${row.destination}</td>
+                <td class="px-4 py-2">${acd}</td>
+                <td class="px-4 py-2">${asr}%</td>
+                <td class="px-4 py-2">${totalMin}</td>
+              </tr>`;
+          });
+
+          if (showTable) {
+            document.getElementById("summaryTable").classList.remove("hidden");
+          }
+        })
+        .catch(error => {
+          console.error("Fetch error:", error);
+          document.getElementById("tableBody").innerHTML = `<tr><td colspan="7" class="text-red-600 px-4 py-2">Request failed</td></tr>`;
+        });
+    }
+
+    setDefaultDateRange();
+    loadMetrics();
+  </script>
+</body>
 </html>

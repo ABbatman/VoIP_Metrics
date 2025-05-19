@@ -1,4 +1,4 @@
-# Project: Tornado Call Stats App
+# Project: Monitoring by Burcovschi
 # Description: Tornado backend with metrics API and HTML frontend using Tailwind CSS
 
 import tornado.ioloop
@@ -6,6 +6,7 @@ import tornado.web
 import os
 import json
 from db import get_connection
+from datetime import datetime
 
 # Main page handler
 class MainHandler(tornado.web.RequestHandler):
@@ -39,15 +40,18 @@ class MetricsHandler(tornado.web.RequestHandler):
                 where_clauses.append("destination = %(destination)s")
                 params["destination"] = destination
             if time_from:
+                # Convert ISO 8601 to datetime and strip trailing Z/.000Z
+                parsed_from = datetime.fromisoformat(time_from.replace("T", " ").split(".")[0])
                 where_clauses.append('"time" >= %(from)s')
-                params["from"] = time_from
+                params["from"] = parsed_from
             if time_to:
+                parsed_to = datetime.fromisoformat(time_to.replace("T", " ").split(".")[0])
                 where_clauses.append('"time" <= %(to)s')
-                params["to"] = time_to
+                params["to"] = parsed_to
 
             where_sql = "WHERE " + " AND ".join(where_clauses) if where_clauses else ""
 
-            cur.execute(f"""
+            query = f"""
                 SELECT
                     time,
                     customer,
@@ -65,10 +69,19 @@ class MetricsHandler(tornado.web.RequestHandler):
                 FROM public.sonus_aggregation_new
                 {where_sql}
                 ORDER BY time DESC
-                LIMIT 100
-            """, params)
+            """
+            print("🟡 Executing SQL:", query)
+            print("🔹 Params:", params)
 
-            rows = cur.fetchall()
+            cur.execute(query, params)
+
+            # Fetch rows and map column names to dictionary
+            columns = [desc[0] for desc in cur.description]
+            fetched = cur.fetchall()
+            rows = [dict(zip(columns, row)) for row in fetched]
+
+            print(f"✅ Fetched {len(rows)} rows")
+
             self.set_header("Content-Type", "application/json")
             self.write(json.dumps(rows, default=str))
 
@@ -78,6 +91,7 @@ class MetricsHandler(tornado.web.RequestHandler):
         except Exception as e:
             self.set_status(500)
             self.write({"error": str(e)})
+            print("❌ ERROR:", str(e))
 
 # Application setup with routes
 def make_app():
