@@ -11,13 +11,19 @@
 <body class="bg-gray-100 text-gray-800 p-6">
   <div class="w-full mx-auto px-4">
     <h1 class="text-2xl font-bold mb-6">Monitoring by Burcovschi</h1>
-
     <!-- Filters Section -->
     <div class="w-full overflow-visible">
       <div class="flex items-center gap-2 w-full justify-start flex-nowrap overflow-visible max-w-full mx-auto px-2">
 
         <!-- Filter fields -->
         <input id="customerInput" placeholder="Customer" class="px-3 py-2 border rounded flex-grow min-w-0 basis-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 my-1" />
+
+        <!-- Swap Button -->
+        <button id="swapButton" onclick="swapCustomerSupplier()" title="Swap customer and supplier"
+          class="text-xl px-2 py-2 border rounded bg-gray-200 hover:bg-gray-300 my-1">
+          ⇄
+        </button>
+
         <input id="supplierInput" placeholder="Supplier" class="px-3 py-2 border rounded flex-grow min-w-0 basis-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 my-1" />
         <input id="destinationInput" placeholder="Destination" class="px-3 py-2 border rounded flex-grow min-w-0 basis-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 my-1" />
         <input id="fromDate" type="date" class="px-3 py-2 border rounded flex-grow min-w-0 basis-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 my-1" />
@@ -63,7 +69,18 @@
 
 
         <!-- Buttons -->
-        <button onclick="loadMetrics()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex-grow-0 flex-shrink-0 my-1">Find</button>
+        <button
+          onclick="loadMetricsWithComparison(false)"
+          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex-grow-0 flex-shrink-0 my-1"
+        >
+          Find
+        </button>
+        <button
+          onclick="loadMetricsWithComparison(true)"
+          class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 flex-grow-0 flex-shrink-0 my-1"
+        >
+          Summary Table
+        </button>
         <button class="bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900 flex-grow-0 flex-shrink-0 my-1" title="Coming soon">CDR</button>
       </div>
     </div>
@@ -71,62 +88,64 @@
     <!-- Summary Table -->
     <div id="summaryTable" class="bg-white rounded shadow hidden w-full mt-6">
       <table class="w-full table-auto">
-        <thead class="bg-gray-200 text-xs">
+        <thead class="text-xs text-gray-800">
           <tr>
-            <th class="px-2 py-1 text-left" rowspan="2">Customer</th>
-            <th class="px-2 py-1 text-left" rowspan="2">Destination</th>
+            <th class="px-2 py-1 text-left bg-gray-200" rowspan="2">Customer</th>
+            <th class="px-2 py-1 text-left bg-gray-100" rowspan="2">Supplier</th>
+            <th class="px-2 py-1 text-left bg-gray-50" rowspan="2">Destination</th>
 
-            <th class="px-2 py-1 text-center" colspan="3">Min</th>
-            <th class="px-2 py-1 text-center" colspan="3">ACD</th>
-            <th class="px-2 py-1 text-center" colspan="3">ASR</th>
-            <th class="px-2 py-1 text-center" colspan="3">SCall</th>
-            <th class="px-2 py-1 text-center" colspan="3">TCall</th>
-            <th class="px-2 py-1 text-center" colspan="3">PDD</th>
-            <th class="px-2 py-1 text-center" colspan="3">ATime</th>
-            <th class="px-2 py-1 text-center" colspan="3">ADur</th>
+            <th class="px-2 py-1 text-center border-l bg-gray-100" colspan="3">Min</th>
+            <th class="px-2 py-1 text-center border-l bg-[#eef1ec]" colspan="3">ACD</th>
+            <th class="px-2 py-1 text-center border-l bg-[#eaf1f7]" colspan="3">ASR</th>
+            <th class="px-2 py-1 text-center border-l bg-gray-100" colspan="3">SCall</th>
+            <th class="px-2 py-1 text-center border-l bg-[#eef1ec]" colspan="3">TCall</th>
+
+            <th class="px-2 py-1 text-center border-l-2 bg-[#eaf1f7]" colspan="3">PDD</th>
+            <th class="px-2 py-1 text-center border-l bg-gray-100" colspan="3">ATime</th>
+            <th class="px-2 py-1 text-center border-l bg-[#eef1ec]" colspan="3">ADur</th>
           </tr>
           <tr>
-            <th class="px-2 py-1">Now</th>
-            <th class="px-2 py-1">Y</th>
-            <th class="px-2 py-1">%</th>
+            <th class="px-2 py-1 border-l bg-white">Now</th>
+            <th class="px-2 py-1 bg-gray-50">Y</th>
+            <th class="px-2 py-1 bg-gray-100">%</th>
 
-            <th class="px-2 py-1">Now</th>
-            <th class="px-2 py-1">Y</th>
-            <th class="px-2 py-1">%</th>
+            <th class="px-2 py-1 border-l bg-white">Now</th>
+            <th class="px-2 py-1 bg-gray-50">Y</th>
+            <th class="px-2 py-1 bg-gray-100">%</th>
 
-            <th class="px-2 py-1">Now</th>
-            <th class="px-2 py-1">Y</th>
-            <th class="px-2 py-1">%</th>
+            <th class="px-2 py-1 border-l bg-white">Now</th>
+            <th class="px-2 py-1 bg-gray-50">Y</th>
+            <th class="px-2 py-1 bg-gray-100">%</th>
 
-            <th class="px-2 py-1">Now</th>
-            <th class="px-2 py-1">Y</th>
-            <th class="px-2 py-1">%</th>
+            <th class="px-2 py-1 border-l bg-white">Now</th>
+            <th class="px-2 py-1 bg-gray-50">Y</th>
+            <th class="px-2 py-1 bg-gray-100">%</th>
 
-            <th class="px-2 py-1">Now</th>
-            <th class="px-2 py-1">Y</th>
-            <th class="px-2 py-1">%</th>
+            <th class="px-2 py-1 border-l bg-white">Now</th>
+            <th class="px-2 py-1 bg-gray-50">Y</th>
+            <th class="px-2 py-1 bg-gray-100">%</th>
 
-            <th class="px-2 py-1">Now</th>
-            <th class="px-2 py-1">Y</th>
-            <th class="px-2 py-1">%</th>
+            <th class="px-2 py-1 border-l-2 bg-white">Now</th>
+            <th class="px-2 py-1 bg-gray-50">Y</th>
+            <th class="px-2 py-1 bg-gray-100">%</th>
 
-            <th class="px-2 py-1">Now</th>
-            <th class="px-2 py-1">Y</th>
-            <th class="px-2 py-1">%</th>
+            <th class="px-2 py-1 border-l bg-white">Now</th>
+            <th class="px-2 py-1 bg-gray-50">Y</th>
+            <th class="px-2 py-1 bg-gray-100">%</th>
 
-            <th class="px-2 py-1">Now</th>
-            <th class="px-2 py-1">Y</th>
-            <th class="px-2 py-1">%</th>
+            <th class="px-2 py-1 border-l bg-white">Now</th>
+            <th class="px-2 py-1 bg-gray-50">Y</th>
+            <th class="px-2 py-1 bg-gray-100">%</th>
           </tr>
         </thead>
         <tbody id="tableBody" class="divide-y divide-gray-100"></tbody>
       </table>
     </div>
-
-    <button onclick="loadMetricsWithComparison(true)" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-10 ml-0 block">Summary Table</button>
   </div>
 
 <script>
+
+  let allSupplierData = [];
 
   // Merge current and yesterday metrics by customer + destination and calculate percentage change
   function mergeAndCompare(current, yesterday) {
@@ -210,13 +229,13 @@ function groupByCustomerDestination(data) {
       };
     }
 
-    grouped[key].seconds += row.seconds || 0;
-    grouped[key].start_nuber += row.start_nuber || 0;
-    grouped[key].start_attempt += row.start_attempt || 0;
-    grouped[key].disc_reason += row.disc_reason || 0;
-    grouped[key].pdd_total += row.pdd || 0;
-    grouped[key].answer_time_total += row.answer_time || 0;
-    grouped[key].duration_total += row.avg_duration || 0;
+    grouped[key].seconds += Number(row.seconds || 0);
+    grouped[key].start_nuber += Number(row.start_nuber || 0);
+    grouped[key].start_attempt += Number(row.start_attempt || 0);
+    grouped[key].disc_reason += Number(row.disc_reason || 0);
+    grouped[key].pdd_total += Number(row.pdd || 0);
+    grouped[key].answer_time_total += Number(row.answer_time || 0);
+    grouped[key].duration_total += Number(row.avg_duration || 0);
     grouped[key].count += 1;
   });
 
@@ -229,14 +248,14 @@ function groupByCustomerDestination(data) {
     result.push({
       customer: g.customer,
       destination: g.destination,
-      Min: +(g.seconds / 60).toFixed(1),
-      ACD: g.start_nuber ? +(g.seconds / g.start_nuber).toFixed(2) : 0,
-      ASR: g.start_attempt ? +(g.start_nuber / g.start_attempt * 100).toFixed(1) : 0,
+      Min: g.seconds ? Math.round(g.seconds / 60) : 0,
+      ACD: g.start_nuber ? +((g.seconds / g.start_nuber / 60).toFixed(1)) : 0,
+      ASR: g.start_attempt ? Math.round((g.start_nuber / g.start_attempt) * 100) : 0,
       SCall: g.start_nuber,
       TCall: g.start_attempt,
-      PDD: +(g.pdd_total / g.count).toFixed(1),
-      ATime: +(g.answer_time_total / g.count).toFixed(1),
-      ADur: +(g.duration_total / g.count).toFixed(1)
+      PDD: g.count ? +(g.pdd_total / g.count / 1000).toFixed(1) : 0,
+      ATime: g.count ? Math.round(g.answer_time_total / g.count) : 0,
+      ADur: g.count ? Math.round(g.duration_total / g.count) : 0
     });
   }
 
@@ -267,71 +286,83 @@ function loadMetricsWithComparison(showTable = false) {
       fetch(`/api/metrics?${paramsYesterday.toString()}`).then(res => res.json())
     ])
     .then(([current, yesterday]) => {
+    allSupplierData = current;
+
 
     // Output raw results
     const groupedCurrent = groupByCustomerDestination(current);
     const groupedYesterday = groupByCustomerDestination(yesterday);
-    console.log("Grouped Current:", groupedCurrent);
-    console.log("Grouped Yesterday:", groupedYesterday);
     const finalTable = mergeAndCompare(groupedCurrent, groupedYesterday);
     console.log("Final Table:", finalTable);
 
     // Render final table into the HTML summaryTable
+  if (showTable) {  
     const table = document.getElementById("tableBody");
     table.innerHTML = ""; // clear previous rows
 
-    finalTable.forEach(row => {
-      table.innerHTML += `
-        <tr class="hover:bg-gray-50">
-          <td class="px-2 py-1">${row.customer}</td>
-          <td class="px-2 py-1">${row.destination}</td>
+    console.log("🚨 finalTable contents:", finalTable);
 
-          <td class="px-2 py-1">${row.Min}</td>
-          <td class="px-2 py-1">${row.YMin}</td>
-          <td class="px-2 py-1">${row.MinPct}%</td>
+  finalTable.forEach(row => {
+    console.log("🔹 Row being inserted into table:", row);
+    table.innerHTML += `
+      <tr class="hover:bg-gray-200 text-sm text-right">
+        <!-- Customer -->
+        <td class="px-2 py-1 text-left">
+          <button
+            class="text-sm text-blue-600 hover:no-underline mr-1"
+            data-customer="${row.customer}"
+            data-destination="${row.destination}"
+            onclick="toggleSuppliers(this)"
+          >
+            +
+          </button>
+          ${row.customer}
+        </td>
 
-          <td class="px-2 py-1">${row.ACD}</td>
-          <td class="px-2 py-1">${row.YACD}</td>
-          <td class="px-2 py-1">${row.ACDPct}%</td>
+        <!-- Supplier: empty for main row -->
+        <td class="px-2 py-1 text-left"></td>
 
-          <td class="px-2 py-1">${row.ASR}</td>
-          <td class="px-2 py-1">${row.YASR}</td>
-          <td class="px-2 py-1">${row.ASRPct}%</td>
+        <!-- Destination -->
+        <td class="px-2 py-1 text-left">${row.destination}</td>
 
-          <td class="px-2 py-1">${row.SCall}</td>
-          <td class="px-2 py-1">${row.YSCall}</td>
-          <td class="px-2 py-1">${row.SCallPct}%</td>
+        <!-- Metrics -->
+        <td class="px-2 py-1 border-l">${row.Min}</td>
+        <td class="px-2 py-1">${row.YMin}</td>
+        <td class="px-2 py-1 bg-gray-50">${row.MinPct}</td>
 
-          <td class="px-2 py-1">${row.TCall}</td>
-          <td class="px-2 py-1">${row.YTCall}</td>
-          <td class="px-2 py-1">${row.TCallPct}%</td>
+        <td class="px-2 py-1 border-l">${row.ACD}</td>
+        <td class="px-2 py-1">${row.YACD}</td>
+        <td class="px-2 py-1 bg-gray-50">${row.ACDPct}</td>
 
-          <td class="px-2 py-1">${row.PDD}</td>
-          <td class="px-2 py-1">${row.YPDD}</td>
-          <td class="px-2 py-1">${row.PDDPct}%</td>
+        <td class="px-2 py-1 border-l">${row.ASR}</td>
+        <td class="px-2 py-1">${row.YASR}</td>
+        <td class="px-2 py-1 bg-gray-50">${row.ASRPct}</td>
 
-          <td class="px-2 py-1">${row.ATime}</td>
-          <td class="px-2 py-1">${row.YATime}</td>
-          <td class="px-2 py-1">${row.ATimePct}%</td>
+        <td class="px-2 py-1 border-l">${row.SCall}</td>
+        <td class="px-2 py-1">${row.YSCall}</td>
+        <td class="px-2 py-1 bg-gray-50">${row.SCallPct}</td>
 
-          <td class="px-2 py-1">${row.ADur}</td>
-          <td class="px-2 py-1">${row.YADur}</td>
-          <td class="px-2 py-1">${row.ADurPct}%</td>
-        </tr>
-      `;
-    });
+        <td class="px-2 py-1 border-l">${row.TCall}</td>
+        <td class="px-2 py-1">${row.YTCall}</td>
+        <td class="px-2 py-1 bg-gray-50">${row.TCallPct}</td>
 
-// Show the table block if requested
-if (showTable) {
-  document.getElementById("summaryTable").classList.remove("hidden");
-}
-    
+        <td class="px-2 py-1 border-l-2">${row.PDD}</td>
+        <td class="px-2 py-1">${row.YPDD}</td>
+        <td class="px-2 py-1 bg-gray-50">${row.PDDPct}</td>
 
-    if (showTable) {
-      document.getElementById("summaryTable").classList.remove("hidden");
-    }
+        <td class="px-2 py-1 border-l">${row.ATime}</td>
+        <td class="px-2 py-1">${row.YATime}</td>
+        <td class="px-2 py-1 bg-gray-50">${row.ATimePct}</td>
 
-      // Next step: group and merge data here
+        <td class="px-2 py-1 border-l">${row.ADur}</td>
+        <td class="px-2 py-1">${row.YADur}</td>
+        <td class="px-2 py-1 bg-gray-50">${row.ADurPct}</td>
+      </tr>
+    `;
+  });
+    document.getElementById("summaryTable").classList.remove("hidden");
+  }  
+    // Next step: group and merge data here
       })
       .catch(error => {
         console.error("Error loading metrics:", error);
@@ -375,6 +406,129 @@ if (showTable) {
       document.getElementById("toTime").value = now.toISOString().slice(11, 19);
     }
 
+    // Toggle display of supplier rows for a specific customer and destination
+    function toggleSuppliers(button) {
+      const customer = button.dataset.customer;
+      const destination = button.dataset.destination;
+      const currentRow = button.closest("tr");
+
+      // ✅ Check: if supplier rows are already shown, remove them and collapse
+      let next = currentRow.nextElementSibling;
+      let found = false;
+      while (next && next.classList) {
+        if (next.classList.contains("supplier-row")) {
+          found = true;
+          next.remove();
+          next = currentRow.nextElementSibling; // update after removal
+        } else {
+          break;
+        }
+      }
+
+      if (found) {
+        button.textContent = "+";
+        return; // stop here, do not add again
+      }
+
+      // ➕ Not expanded yet: expand and insert rows
+      button.textContent = "−";
+
+      // Filter all preloaded rows for this customer + destination
+      const filtered = allSupplierData.filter(row =>
+        row.customer === customer && row.destination === destination
+      );
+
+      // Group rows by customer + destination + supplier
+      const grouped = groupByCustomerDestinationSupplier(filtered);
+
+      // Generate HTML rows
+      const rowsHTML = grouped.map(s => `
+        <tr class="supplier-row bg-gray-100 hover:bg-gray-200 text-sm text-black text-right border-t border-dashed border-gray-300">
+          <td></td>
+          <td class="px-2 py-1 text-left">${s.supplier}</td>
+          <td class="px-2 py-1 text-left"></td>
+
+          <td class="px-2 py-1 border-l">${s.Min}</td>
+          <td class="px-2 py-1">${s.YMin || 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.MinPct || 0}</td>
+
+          <td class="px-2 py-1 border-l">${s.ACD}</td>
+          <td class="px-2 py-1">${s.YACD || 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.ACDPct || 0}</td>
+
+          <td class="px-2 py-1 border-l">${s.ASR}</td>
+          <td class="px-2 py-1">${s.YASR || 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.ASRPct || 0}</td>
+
+          <td class="px-2 py-1 border-l">${s.SCall}</td>
+          <td class="px-2 py-1">${s.YSCall || 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.SCallPct || 0}</td>
+
+          <td class="px-2 py-1 border-l">${s.TCall}</td>
+          <td class="px-2 py-1">${s.YTCall || 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.TCallPct || 0}</td>
+
+          <td class="px-2 py-1 border-l-2">${s.PDD}</td>
+          <td class="px-2 py-1">${s.YPDD || 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.PDDPct || 0}</td>
+
+          <td class="px-2 py-1 border-l">${s.ATime}</td>
+          <td class="px-2 py-1">${s.YATime || 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.ATimePct || 0}</td>
+
+          <td class="px-2 py-1 border-l">${s.ADur}</td>
+          <td class="px-2 py-1">${s.YADur || 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.ADurPct || 0}</td>
+        </tr>
+      `).join("");
+
+      // Insert supplier rows below the clicked row
+      currentRow.insertAdjacentHTML("afterend", rowsHTML);
+    }
+
+  // Group data by customer + destination + supplier
+  function groupByCustomerDestinationSupplier(data) {
+    const grouped = {};
+    data.forEach(row => {
+      const key = `${row.customer}|${row.destination}|${row.supplier}`;
+      if (!grouped[key]) {
+        grouped[key] = {
+          customer: row.customer,
+          destination: row.destination,
+          supplier: row.supplier,
+          seconds: 0,
+          start_nuber: 0,
+          start_attempt: 0,
+          pdd_total: 0,
+          answer_time_total: 0,
+          duration_total: 0,
+          count: 0
+        };
+      }
+      grouped[key].seconds += Number(row.seconds || 0);
+      grouped[key].start_nuber += Number(row.start_nuber || 0);
+      grouped[key].start_attempt += Number(row.start_attempt || 0);
+      grouped[key].pdd_total += Number(row.pdd || 0);
+      grouped[key].answer_time_total += Number(row.answer_time || 0);
+      grouped[key].duration_total += Number(row.avg_duration || 0);
+      grouped[key].count += 1;
+    });
+
+    return Object.values(grouped).map(g => ({
+      supplier: g.supplier,
+      destination: g.destination,
+      Min: g.seconds ? +(g.seconds / 60).toFixed(1) : 0,
+      Min: g.seconds ? Math.round(g.seconds / 60) : 0,
+      ACD: g.start_nuber ? +((g.seconds / g.start_nuber / 60).toFixed(1)) : 0,
+      ASR: g.start_attempt ? Math.round((g.start_nuber / g.start_attempt) * 100) : 0,
+      SCall: g.start_nuber,
+      TCall: g.start_attempt,
+      PDD: g.count ? +(g.pdd_total / g.count / 1000).toFixed(1) : 0,
+      ATime: g.count ? Math.round(g.answer_time_total / g.count) : 0,
+      ADur: g.count ? Math.round(g.duration_total / g.count) : 0
+    }));
+  }
+
     function loadMetrics(showTable = false) {
       const params = new URLSearchParams({
         customer: document.getElementById("customerInput").value.trim(),
@@ -383,6 +537,8 @@ if (showTable) {
         from: document.getElementById("fromDate").value + 'T' + document.getElementById("fromTime").value,
         to: document.getElementById("toDate").value + 'T' + document.getElementById("toTime").value
       });
+
+
 
       fetch(`/api/metrics?${params.toString()}`)
         .then(response => response.json())
@@ -421,6 +577,32 @@ if (showTable) {
           document.getElementById("tableBody").innerHTML = `<tr><td colspan="7" class="text-red-600 px-4 py-2">Request failed</td></tr>`;
         });
     }
+
+  // Flag to track whether the swap is active
+  let swapActive = false;
+
+  function swapCustomerSupplier() {
+    const customer = document.getElementById("customerInput");
+    const supplier = document.getElementById("supplierInput");
+    const button = document.getElementById("swapButton");
+
+    // Swap the values of the input fields
+    const temp = customer.value;
+    customer.value = supplier.value;
+    supplier.value = temp;
+
+    // Toggle button style to visually indicate swap state
+    swapActive = !swapActive;
+    if (swapActive) {
+      // If swap is active, apply darker background and white text
+      button.classList.remove("bg-gray-200");
+      button.classList.add("bg-gray-500", "text-white");
+    } else {
+      // If swap is reset, revert to default style
+      button.classList.remove("bg-gray-500", "text-white");
+      button.classList.add("bg-gray-200");
+    }
+  }
 
     setDefaultDateRange();
     loadMetrics();

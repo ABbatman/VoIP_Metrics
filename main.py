@@ -40,7 +40,6 @@ class MetricsHandler(tornado.web.RequestHandler):
                 where_clauses.append("destination = %(destination)s")
                 params["destination"] = destination
             if time_from:
-                # Convert ISO 8601 to datetime and strip trailing Z/.000Z
                 parsed_from = datetime.fromisoformat(time_from.replace("T", " ").split(".")[0])
                 where_clauses.append('"time" >= %(from)s')
                 params["from"] = parsed_from
@@ -70,18 +69,26 @@ class MetricsHandler(tornado.web.RequestHandler):
                 {where_sql}
                 ORDER BY time DESC
             """
+
             print("🟡 Executing SQL:", query)
             print("🔹 Params:", params)
 
             cur.execute(query, params)
 
-            # Fetch rows and map column names to dictionary
+            # Get column names and raw data from cursor
             columns = [desc[0] for desc in cur.description]
             fetched = cur.fetchall()
-            rows = [dict(zip(columns, row)) for row in fetched]
 
-            print(f"✅ Fetched {len(rows)} rows")
+            # Debug output
+            print("🧶 columns      =", columns)
+            print("🧶 fetched[0]   =", fetched[0] if fetched else "EMPTY")
 
+            # fetched already contains RealDictRow — just convert to list
+            rows = list(fetched)
+
+            print(f"📊 Row count returned from DB: {len(rows)}")
+
+            # Send JSON response to frontend
             self.set_header("Content-Type", "application/json")
             self.write(json.dumps(rows, default=str))
 
