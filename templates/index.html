@@ -17,11 +17,14 @@
 
         <!-- Filter fields -->
         <input id="customerInput" placeholder="Customer" class="px-3 py-2 border rounded flex-grow min-w-0 basis-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 my-1" />
-
-        <!-- Swap Button -->
-        <button id="swapButton" onclick="swapCustomerSupplier()" title="Swap customer and supplier"
-          class="text-xl px-2 py-2 border rounded bg-gray-200 hover:bg-gray-300 my-1">
-          ⇄
+        
+        <button
+          id="reverseButton"
+          onclick="toggleReverse()"
+          title="Toggle direction"
+          class="text-xl px-2 py-2 border rounded bg-gray-200 hover:bg-gray-300 active:bg-gray-400 my-1"
+        >
+          🔁
         </button>
 
         <input id="supplierInput" placeholder="Supplier" class="px-3 py-2 border rounded flex-grow min-w-0 basis-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 my-1" />
@@ -36,7 +39,6 @@
                 step="1"
                 class="px-3 py-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
                 onfocus="showTimeControls('fromTimeControls')"
-                onblur="hideTimeControls('fromTimeControls')"
             />
             <div id="fromTimeControls" class="flex gap-1 hidden mt-1 absolute left-1/2 -translate-x-1/2 top-full z-10">
                 <button onclick="adjustTime('fromTime', -1)" class="text-sm px-2 py-1 bg-gray-200 rounded">−</button>
@@ -57,7 +59,6 @@
                 step="1"
                 class="px-3 py-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
                 onfocus="showTimeControls('toTimeControls')"
-                onblur="hideTimeControls('toTimeControls')"
             />
             <div id="toTimeControls" class="flex gap-1 hidden mt-1 absolute left-1/2 -translate-x-1/2 top-full z-10">
                 <button onclick="adjustTime('toTime', -1)" class="text-sm px-2 py-1 bg-gray-200 rounded">−</button>
@@ -89,55 +90,120 @@
     <div id="summaryTable" class="bg-white rounded shadow hidden w-full mt-6">
       <table class="w-full table-auto">
         <thead class="text-xs text-gray-800">
-          <tr>
-            <th class="px-2 py-1 text-left bg-gray-200" rowspan="2">Customer</th>
-            <th class="px-2 py-1 text-left bg-gray-100" rowspan="2">Supplier</th>
-            <th class="px-2 py-1 text-left bg-gray-50" rowspan="2">Destination</th>
+  <tr>
+    <th id="thMain" class="px-2 py-2 text-left bg-gray-200 min-h-[24px]" rowspan="2">
+  <div class="flex items-center gap-1 min-h-[20px]">
+    Customer
+    <button onclick="sortByColumn('customer')" class="text-xs text-blue-400 hover:text-blue-600" title="Sort by customer">⬍</button>
+  </div>
+</th>
 
-            <th class="px-2 py-1 text-center border-l bg-gray-100" colspan="3">Min</th>
-            <th class="px-2 py-1 text-center border-l bg-[#eef1ec]" colspan="3">ACD</th>
-            <th class="px-2 py-1 text-center border-l bg-[#eaf1f7]" colspan="3">ASR</th>
-            <th class="px-2 py-1 text-center border-l bg-gray-100" colspan="3">SCall</th>
-            <th class="px-2 py-1 text-center border-l bg-[#eef1ec]" colspan="3">TCall</th>
+<th id="thPeer" class="px-2 py-2 text-left bg-gray-100 min-h-[24px]" rowspan="2">
+  <div class="flex items-center gap-1 min-h-[20px]">
+    Supplier
+    <button onclick="sortByColumn('supplier')" class="text-xs text-blue-400 hover:text-blue-600" title="Sort by supplier">⬍</button>
+  </div>
+</th>
 
-            <th class="px-2 py-1 text-center border-l-2 bg-[#eaf1f7]" colspan="3">PDD</th>
-            <th class="px-2 py-1 text-center border-l bg-gray-100" colspan="3">ATime</th>
-            <th class="px-2 py-1 text-center border-l bg-[#eef1ec]" colspan="3">ADur</th>
-          </tr>
-          <tr>
-            <th class="px-2 py-1 border-l bg-white">Now</th>
-            <th class="px-2 py-1 bg-gray-50">Y</th>
-            <th class="px-2 py-1 bg-gray-100">%</th>
+<th class="px-2 py-1 text-left bg-gray-50" rowspan="2">
+  <div class="flex items-center gap-1">
+    Destination
+    <button onclick="sortByColumn('destination')" class="text-xs text-blue-400 hover:text-blue-600" title="Sort by destination">⬍</button>
+  </div>
+</th>
 
-            <th class="px-2 py-1 border-l bg-white">Now</th>
-            <th class="px-2 py-1 bg-gray-50">Y</th>
-            <th class="px-2 py-1 bg-gray-100">%</th>
+    <th class="px-2 py-1 text-center border-l bg-gray-100" colspan="3">Min</th>
+    <th class="px-2 py-1 text-center border-l bg-[#eef1ec]" colspan="3">ACD</th>
+    <th class="px-2 py-1 text-center border-l bg-[#eaf1f7]" colspan="3">ASR</th>
+    <th class="px-2 py-1 text-center border-l bg-gray-100" colspan="3">SCall</th>
+    <th class="px-2 py-1 text-center border-l bg-[#eef1ec]" colspan="3">TCall</th>
 
-            <th class="px-2 py-1 border-l bg-white">Now</th>
-            <th class="px-2 py-1 bg-gray-50">Y</th>
-            <th class="px-2 py-1 bg-gray-100">%</th>
+    <th class="px-2 py-1 text-center border-l-2 bg-[#eaf1f7]" colspan="3">PDD</th>
+    <th class="px-2 py-1 text-center border-l bg-gray-100" colspan="3">ATime</th>
+    <th class="px-2 py-1 text-center border-l bg-[#eef1ec]" colspan="3">ADur</th>
+  </tr>
+  <tr>
+    <th class="px-2 py-1 border-l bg-white">
+      Now <button onclick="sortByColumn('Min')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort Min">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-50">
+      Y <button onclick="sortByColumn('YMin')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YMin">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-100">
+      % <button onclick="sortByColumn('MinPct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort Min %">⬍</button>
+    </th>
 
-            <th class="px-2 py-1 border-l bg-white">Now</th>
-            <th class="px-2 py-1 bg-gray-50">Y</th>
-            <th class="px-2 py-1 bg-gray-100">%</th>
+    <th class="px-2 py-1 border-l bg-white">
+      Now <button onclick="sortByColumn('ACD')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ACD">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-50">
+      Y <button onclick="sortByColumn('YACD')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YACD">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-100">
+      % <button onclick="sortByColumn('ACDPct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ACD %">⬍</button>
+    </th>
 
-            <th class="px-2 py-1 border-l bg-white">Now</th>
-            <th class="px-2 py-1 bg-gray-50">Y</th>
-            <th class="px-2 py-1 bg-gray-100">%</th>
+    <th class="px-2 py-1 border-l bg-white">
+      Now <button onclick="sortByColumn('ASR')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ASR">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-50">
+      Y <button onclick="sortByColumn('YASR')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YASR">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-100">
+      % <button onclick="sortByColumn('ASRPct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ASR %">⬍</button>
+    </th>
 
-            <th class="px-2 py-1 border-l-2 bg-white">Now</th>
-            <th class="px-2 py-1 bg-gray-50">Y</th>
-            <th class="px-2 py-1 bg-gray-100">%</th>
+    <th class="px-2 py-1 border-l bg-white">
+      Now <button onclick="sortByColumn('SCall')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort SCall">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-50">
+      Y <button onclick="sortByColumn('YSCall')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YSCall">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-100">
+      % <button onclick="sortByColumn('SCallPct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort SCall %">⬍</button>
+    </th>
 
-            <th class="px-2 py-1 border-l bg-white">Now</th>
-            <th class="px-2 py-1 bg-gray-50">Y</th>
-            <th class="px-2 py-1 bg-gray-100">%</th>
+    <th class="px-2 py-1 border-l bg-white">
+      Now <button onclick="sortByColumn('TCall')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort TCall">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-50">
+      Y <button onclick="sortByColumn('YTCall')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YTCall">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-100">
+      % <button onclick="sortByColumn('TCallPct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort TCall %">⬍</button>
+    </th>
 
-            <th class="px-2 py-1 border-l bg-white">Now</th>
-            <th class="px-2 py-1 bg-gray-50">Y</th>
-            <th class="px-2 py-1 bg-gray-100">%</th>
-          </tr>
-        </thead>
+    <th class="px-2 py-1 border-l-2 bg-white">
+      Now <button onclick="sortByColumn('PDD')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort PDD">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-50">
+      Y <button onclick="sortByColumn('YPDD')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YPDD">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-100">
+      % <button onclick="sortByColumn('PDDPct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort PDD %">⬍</button>
+    </th>
+
+    <th class="px-2 py-1 border-l bg-white">
+      Now <button onclick="sortByColumn('ATime')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ATime">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-50">
+      Y <button onclick="sortByColumn('YATime')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YATime">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-100">
+      % <button onclick="sortByColumn('ATimePct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ATime %">⬍</button>
+    </th>
+
+    <th class="px-2 py-1 border-l bg-white">
+      Now <button onclick="sortByColumn('ADur')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ADur">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-50">
+      Y <button onclick="sortByColumn('YADur')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YADur">⬍</button>
+    </th>
+    <th class="px-2 py-1 bg-gray-100">
+      % <button onclick="sortByColumn('ADurPct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ADur %">⬍</button>
+    </th>
+  </tr>
+</thead>
         <tbody id="tableBody" class="divide-y divide-gray-100"></tbody>
       </table>
     </div>
@@ -168,6 +234,7 @@
 
     merged.push({
       customer: row.customer,
+      supplier: row.supplier,
       destination: row.destination,
 
       Min: row.Min,
@@ -255,119 +322,277 @@ function groupByCustomerDestination(data) {
       TCall: g.start_attempt,
       PDD: g.count ? +(g.pdd_total / g.count / 1000).toFixed(1) : 0,
       ATime: g.count ? Math.round(g.answer_time_total / g.count) : 0,
-      ADur: g.count ? Math.round(g.duration_total / g.count) : 0
+      ADur: g.count ? +((g.duration_total / g.count / 60).toFixed(1)) : 0
     });
   }
 
   return result;
 }
 
+// Group by supplier + destination, and show each customer individually
+function groupBySupplierDestinationCustomer(data) {
+  const grouped = {};
+
+  data.forEach(row => {
+    const key = `${row.supplier}|${row.destination}|${row.customer}`;
+
+    if (!grouped[key]) {
+      grouped[key] = {
+        supplier: row.supplier,
+        customer: row.customer,
+        destination: row.destination,
+        seconds: 0,
+        start_nuber: 0,
+        start_attempt: 0,
+        pdd_total: 0,
+        answer_time_total: 0,
+        duration_total: 0,
+        count: 0
+      };
+    }
+
+    grouped[key].seconds += Number(row.seconds || 0);
+    grouped[key].start_nuber += Number(row.start_nuber || 0);
+    grouped[key].start_attempt += Number(row.start_attempt || 0);
+    grouped[key].pdd_total += Number(row.pdd || 0);
+    grouped[key].answer_time_total += Number(row.answer_time || 0);
+    grouped[key].duration_total += Number(row.avg_duration || 0);
+    grouped[key].count += 1;
+  });
+
+  return Object.values(grouped).map(g => ({
+    supplier: g.supplier,
+    customer: g.customer,
+    destination: g.destination,
+    Min: g.seconds ? Math.round(g.seconds / 60) : 0,
+    ACD: g.start_nuber ? +((g.seconds / g.start_nuber / 60).toFixed(1)) : 0,
+    ASR: g.start_attempt ? Math.round((g.start_nuber / g.start_attempt) * 100) : 0,
+    SCall: g.start_nuber,
+    TCall: g.start_attempt,
+    PDD: g.count ? +(g.pdd_total / g.count / 1000).toFixed(1) : 0,
+    ATime: g.count ? Math.round(g.answer_time_total / g.count) : 0,
+    ADur: g.count ? +((g.duration_total / g.count / 60).toFixed(1)) : 0
+  }));
+}
+
+// Group data by supplier and destination
+function groupBySupplierDestination(data) {
+  const grouped = {};
+
+  data.forEach(row => {
+    const key = `${row.supplier}|${row.destination}`;
+
+    // Initialize new group if not yet created
+    if (!grouped[key]) {
+      grouped[key] = {
+        supplier: row.supplier,
+        destination: row.destination,
+        seconds: 0,
+        start_nuber: 0,
+        start_attempt: 0,
+        pdd_total: 0,
+        answer_time_total: 0,
+        duration_total: 0,
+        count: 0
+      };
+    }
+
+    // Accumulate values for metrics
+    grouped[key].seconds += Number(row.seconds || 0);
+    grouped[key].start_nuber += Number(row.start_nuber || 0);
+    grouped[key].start_attempt += Number(row.start_attempt || 0);
+    grouped[key].pdd_total += Number(row.pdd || 0);
+    grouped[key].answer_time_total += Number(row.answer_time || 0);
+    grouped[key].duration_total += Number(row.avg_duration || 0);
+    grouped[key].count += 1;
+  });
+
+  // Convert grouped data into final array with calculated metrics
+  return Object.values(grouped).map(g => ({
+    supplier: g.supplier,
+    destination: g.destination,
+    Min: g.seconds ? Math.round(g.seconds / 60) : 0,
+    ACD: g.start_nuber ? +((g.seconds / g.start_nuber / 60).toFixed(1)) : 0,
+    ASR: g.start_attempt ? Math.round((g.start_nuber / g.start_attempt) * 100) : 0,
+    SCall: g.start_nuber,
+    TCall: g.start_attempt,
+    PDD: g.count ? +(g.pdd_total / g.count / 1000).toFixed(1) : 0,
+    ATime: g.count ? Math.round(g.answer_time_total / g.count) : 0,
+    ADur: g.count ? +((g.duration_total / g.count / 60).toFixed(1)) : 0
+  }));
+}
+
 function loadMetricsWithComparison(showTable = false) {
-    // Get input values from filters
-    const customer = document.getElementById("customerInput").value.trim();
-    const supplier = document.getElementById("supplierInput").value.trim();
-    const destination = document.getElementById("destinationInput").value.trim();
-    const from = document.getElementById("fromDate").value + 'T' + document.getElementById("fromTime").value;
-    const to = document.getElementById("toDate").value + 'T' + document.getElementById("toTime").value;
+  console.log("🟡 reverseMode =", reverseMode);
 
-    // Calculate yesterday's time range by shifting -24h
-    const fromDateObj = new Date(from);
-    const toDateObj = new Date(to);
-    const from_y = new Date(fromDateObj.getTime() - 24 * 60 * 60 * 1000).toISOString();
-    const to_y = new Date(toDateObj.getTime() - 24 * 60 * 60 * 1000).toISOString();
+  if (!showTable) {
+    document.getElementById("summaryTable").classList.add("hidden");
+  }
 
-    // Build query parameters for both periods
-    const paramsToday = new URLSearchParams({ customer, supplier, destination, from, to });
-    const paramsYesterday = new URLSearchParams({ customer, supplier, destination, from: from_y, to: to_y });
+  const thMain = document.getElementById("thMain");
+  const thPeer = document.getElementById("thPeer");
 
-    // Fetch both datasets in parallel
-    Promise.all([
-      fetch(`/api/metrics?${paramsToday.toString()}`).then(res => res.json()),
-      fetch(`/api/metrics?${paramsYesterday.toString()}`).then(res => res.json())
-    ])
-    .then(([current, yesterday]) => {
+  if (reverseMode) {
+    thMain.textContent = "Supplier";
+    thPeer.textContent = "Customer";
+  } else {
+    thMain.textContent = "Customer";
+    thPeer.textContent = "Supplier";
+  }
+
+  const customer = document.getElementById("customerInput").value.trim();
+  const supplier = document.getElementById("supplierInput").value.trim();
+  const destination = document.getElementById("destinationInput").value.trim();
+  const from = document.getElementById("fromDate").value + 'T' + document.getElementById("fromTime").value;
+  const to = document.getElementById("toDate").value + 'T' + document.getElementById("toTime").value;
+
+  const fromDateObj = new Date(from);
+  const toDateObj = new Date(to);
+  const from_y = new Date(fromDateObj.getTime() - 24 * 60 * 60 * 1000).toISOString();
+  const to_y = new Date(toDateObj.getTime() - 24 * 60 * 60 * 1000).toISOString();
+
+  const paramsToday = new URLSearchParams({ customer, supplier, destination, from, to });
+  const paramsYesterday = new URLSearchParams({ customer, supplier, destination, from: from_y, to: to_y });
+
+  Promise.all([
+    fetch(`/api/metrics?${paramsToday.toString()}`).then(res => res.json()),
+    fetch(`/api/metrics?${paramsYesterday.toString()}`).then(res => res.json())
+  ])
+  .then(([current, yesterday]) => {
     allSupplierData = current;
 
+    const groupedCurrent = reverseMode
+      ? groupBySupplierDestination(current)
+      : groupByCustomerDestination(current);
 
-    // Output raw results
-    const groupedCurrent = groupByCustomerDestination(current);
-    const groupedYesterday = groupByCustomerDestination(yesterday);
-    const finalTable = mergeAndCompare(groupedCurrent, groupedYesterday);
-    console.log("Final Table:", finalTable);
+    const groupedYesterday = reverseMode
+      ? groupBySupplierDestination(yesterday)
+      : groupByCustomerDestination(yesterday);
 
-    // Render final table into the HTML summaryTable
-  if (showTable) {  
-    const table = document.getElementById("tableBody");
-    table.innerHTML = ""; // clear previous rows
+    finalTable = mergeAndCompare(groupedCurrent, groupedYesterday);
 
-    console.log("🚨 finalTable contents:", finalTable);
+    // Always render table
+    renderTable();
 
-  finalTable.forEach(row => {
-    console.log("🔹 Row being inserted into table:", row);
-    table.innerHTML += `
-      <tr class="hover:bg-gray-200 text-sm text-right">
-        <!-- Customer -->
-        <td class="px-2 py-1 text-left">
-          <button
-            class="text-sm text-blue-600 hover:no-underline mr-1"
-            data-customer="${row.customer}"
-            data-destination="${row.destination}"
-            onclick="toggleSuppliers(this)"
-          >
-            +
-          </button>
-          ${row.customer}
-        </td>
-
-        <!-- Supplier: empty for main row -->
-        <td class="px-2 py-1 text-left"></td>
-
-        <!-- Destination -->
-        <td class="px-2 py-1 text-left">${row.destination}</td>
-
-        <!-- Metrics -->
-        <td class="px-2 py-1 border-l">${row.Min}</td>
-        <td class="px-2 py-1">${row.YMin}</td>
-        <td class="px-2 py-1 bg-gray-50">${row.MinPct}</td>
-
-        <td class="px-2 py-1 border-l">${row.ACD}</td>
-        <td class="px-2 py-1">${row.YACD}</td>
-        <td class="px-2 py-1 bg-gray-50">${row.ACDPct}</td>
-
-        <td class="px-2 py-1 border-l">${row.ASR}</td>
-        <td class="px-2 py-1">${row.YASR}</td>
-        <td class="px-2 py-1 bg-gray-50">${row.ASRPct}</td>
-
-        <td class="px-2 py-1 border-l">${row.SCall}</td>
-        <td class="px-2 py-1">${row.YSCall}</td>
-        <td class="px-2 py-1 bg-gray-50">${row.SCallPct}</td>
-
-        <td class="px-2 py-1 border-l">${row.TCall}</td>
-        <td class="px-2 py-1">${row.YTCall}</td>
-        <td class="px-2 py-1 bg-gray-50">${row.TCallPct}</td>
-
-        <td class="px-2 py-1 border-l-2">${row.PDD}</td>
-        <td class="px-2 py-1">${row.YPDD}</td>
-        <td class="px-2 py-1 bg-gray-50">${row.PDDPct}</td>
-
-        <td class="px-2 py-1 border-l">${row.ATime}</td>
-        <td class="px-2 py-1">${row.YATime}</td>
-        <td class="px-2 py-1 bg-gray-50">${row.ATimePct}</td>
-
-        <td class="px-2 py-1 border-l">${row.ADur}</td>
-        <td class="px-2 py-1">${row.YADur}</td>
-        <td class="px-2 py-1 bg-gray-50">${row.ADurPct}</td>
-      </tr>
-    `;
+    // Show the table if requested
+    if (showTable) {
+      document.getElementById("summaryTable").classList.remove("hidden");
+    }
+  })
+  .catch(error => {
+    console.error("Error loading metrics:", error);
   });
-    document.getElementById("summaryTable").classList.remove("hidden");
-  }  
-    // Next step: group and merge data here
-      })
-      .catch(error => {
-        console.error("Error loading metrics:", error);
+}
+    
+    // Store the final table data globally to reuse it for sorting
+    let finalTable = [];
+
+    // Track current sorting state
+    let currentSort = {
+      column: null,
+      asc: true
+    };
+
+    // Sort finalTable by selected column and direction
+    function sortByColumn(column) {
+      // Do nothing if there is no data
+      if (!finalTable.length) return;
+
+      // Toggle sort direction if clicking the same column again
+      if (currentSort.column === column) {
+        currentSort.asc = !currentSort.asc;
+      } else {
+        currentSort.column = column;
+        currentSort.asc = true;
+      }
+
+    // Perform sorting
+    finalTable.sort((a, b) => {
+      const valA = a[column];
+      const valB = b[column];
+
+      // Move null/undefined to the bottom
+      if (valA == null) return 1;
+      if (valB == null) return -1;
+
+      // If numbers, do numeric sort
+      if (typeof valA === "number" && typeof valB === "number") {
+        return currentSort.asc ? valA - valB : valB - valA;
+      }
+
+      // Otherwise, do alphabetical sort
+      return currentSort.asc
+        ? String(valA).localeCompare(String(valB))
+        : String(valB).localeCompare(String(valA));
+    });
+    renderTable();
+  }
+  
+
+  function renderTable() {
+  const table = document.getElementById("tableBody");
+  table.innerHTML = "";
+  // Loop through all rows and render them
+  finalTable.forEach(row => {
+      const main = reverseMode ? row.supplier : row.customer;
+      const peer = reverseMode ? row.customer : row.supplier;
+
+        table.innerHTML += `
+          <tr class="hover:bg-gray-200 text-sm text-right">
+            <td class="px-2 py-1 text-left">
+              <button
+                class="text-sm text-blue-600 hover:no-underline mr-1"
+                data-main="${main}"
+                data-destination="${row.destination}"
+                onclick="toggleSuppliers(this)"
+              >
+                +
+              </button>
+              ${main}
+            </td>
+
+            <td class="px-2 py-1 text-left">${peer || ""}</td>
+            <td class="px-2 py-1 text-left">${row.destination}</td>
+
+            <td class="px-2 py-1 border-l">${row.Min}</td>
+            <td class="px-2 py-1">${row.YMin != null ? row.YMin : 0}</td>
+            <td class="px-2 py-1 bg-gray-50">${row.MinPct != null ? row.MinPct : 0}</td>
+
+            <td class="px-2 py-1 border-l">${row.ACD}</td>
+            <td class="px-2 py-1">${row.YACD != null ? row.YACD : 0}</td>
+            <td class="px-2 py-1 bg-gray-50">${row.ACDPct != null ? row.ACDPct : 0}</td>
+
+            <td class="px-2 py-1 border-l">${row.ASR}</td>
+            <td class="px-2 py-1">${row.YASR != null ? row.YASR : 0}</td>
+            <td class="px-2 py-1 bg-gray-50">${row.ASRPct != null ? row.ASRPct : 0}</td>
+
+            <td class="px-2 py-1 border-l">${row.SCall}</td>
+            <td class="px-2 py-1">${row.YSCall != null ? row.YSCall : 0}</td>
+            <td class="px-2 py-1 bg-gray-50">${row.SCallPct != null ? row.SCallPct : 0}</td>
+
+            <td class="px-2 py-1 border-l">${row.TCall}</td>
+            <td class="px-2 py-1">${row.YTCall != null ? row.YTCall : 0}</td>
+            <td class="px-2 py-1 bg-gray-50">${row.TCallPct != null ? row.TCallPct : 0}</td>
+
+            <td class="px-2 py-1 border-l-2">${row.PDD}</td>
+            <td class="px-2 py-1">${row.YPDD != null ? row.YPDD : 0}</td>
+            <td class="px-2 py-1 bg-gray-50">${row.PDDPct != null ? row.PDDPct : 0}</td>
+
+            <td class="px-2 py-1 border-l">${row.ATime}</td>
+            <td class="px-2 py-1">${row.YATime != null ? row.YATime : 0}</td>
+            <td class="px-2 py-1 bg-gray-50">${row.ATimePct != null ? row.ATimePct : 0}</td>
+
+            <td class="px-2 py-1 border-l">${row.ADur}</td>
+            <td class="px-2 py-1">${row.YADur != null ? row.YADur : 0}</td>
+            <td class="px-2 py-1 bg-gray-50">${row.ADurPct != null ? row.ADurPct : 0}</td>
+          </tr>
+        `;
       });
-    }  
+
+      // Make sure the table is visible
+      document.getElementById("summaryTable").classList.remove("hidden");
+    }
+
     function showTimeControls(id) {
       document.getElementById(id).classList.remove("hidden");
     }
@@ -406,20 +631,23 @@ function loadMetricsWithComparison(showTable = false) {
       document.getElementById("toTime").value = now.toISOString().slice(11, 19);
     }
 
-    // Toggle display of supplier rows for a specific customer and destination
     function toggleSuppliers(button) {
-      const customer = button.dataset.customer;
+      const main = button.dataset.main;
       const destination = button.dataset.destination;
       const currentRow = button.closest("tr");
 
-      // ✅ Check: if supplier rows are already shown, remove them and collapse
+      console.log("🔍 Expand requested:");
+      console.log("Mode:", reverseMode ? "Supplier → Customers" : "Customer → Suppliers");
+      console.log("Main:", main, "Destination:", destination);
+
+      // Collapse if already expanded
       let next = currentRow.nextElementSibling;
       let found = false;
       while (next && next.classList) {
         if (next.classList.contains("supplier-row")) {
           found = true;
           next.remove();
-          next = currentRow.nextElementSibling; // update after removal
+          next = currentRow.nextElementSibling;
         } else {
           break;
         }
@@ -427,63 +655,74 @@ function loadMetricsWithComparison(showTable = false) {
 
       if (found) {
         button.textContent = "+";
-        return; // stop here, do not add again
+        return;
       }
 
-      // ➕ Not expanded yet: expand and insert rows
+      // Expand now
       button.textContent = "−";
 
-      // Filter all preloaded rows for this customer + destination
-      const filtered = allSupplierData.filter(row =>
-        row.customer === customer && row.destination === destination
-      );
+      // Filter data
+      const filtered = reverseMode
+        ? allSupplierData.filter(row =>
+          row.supplier === main && row.destination === destination)
+        : allSupplierData.filter(row =>
+          row.customer === main && row.destination === destination);
 
-      // Group rows by customer + destination + supplier
-      const grouped = groupByCustomerDestinationSupplier(filtered);
+      // Group filtered rows
+      const grouped = reverseMode
+        ? groupBySupplierDestinationCustomer(filtered)
+        : groupByCustomerDestinationSupplier(filtered);
 
-      // Generate HTML rows
-      const rowsHTML = grouped.map(s => `
+      // Debug output only
+      console.log("Grouped rows:", grouped);
+
+    // Render expandable rows
+    const rowsHTML = grouped.map(s => {
+      const name = reverseMode ? s.customer : s.supplier;
+
+      return `
         <tr class="supplier-row bg-gray-100 hover:bg-gray-200 text-sm text-black text-right border-t border-dashed border-gray-300">
           <td></td>
-          <td class="px-2 py-1 text-left">${s.supplier}</td>
-          <td class="px-2 py-1 text-left"></td>
+          <td class="px-2 py-1 text-left">${name}</td>
+          <td class="px-2 py-1 text-left">${s.destination}</td>
 
           <td class="px-2 py-1 border-l">${s.Min}</td>
-          <td class="px-2 py-1">${s.YMin || 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.MinPct || 0}</td>
+          <td class="px-2 py-1">${s.YMin != null ? s.YMin : 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.MinPct != null ? s.MinPct : 0}</td>
 
           <td class="px-2 py-1 border-l">${s.ACD}</td>
-          <td class="px-2 py-1">${s.YACD || 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.ACDPct || 0}</td>
+          <td class="px-2 py-1">${s.YACD != null ? s.YACD : 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.ACDPct != null ? s.ACDPct : 0}</td>
 
           <td class="px-2 py-1 border-l">${s.ASR}</td>
-          <td class="px-2 py-1">${s.YASR || 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.ASRPct || 0}</td>
+          <td class="px-2 py-1">${s.YASR != null ? s.YASR : 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.ASRPct != null ? s.ASRPct : 0}</td>
 
           <td class="px-2 py-1 border-l">${s.SCall}</td>
-          <td class="px-2 py-1">${s.YSCall || 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.SCallPct || 0}</td>
+          <td class="px-2 py-1">${s.YSCall != null ? s.YSCall : 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.SCallPct != null ? s.SCallPct : 0}</td>
 
           <td class="px-2 py-1 border-l">${s.TCall}</td>
-          <td class="px-2 py-1">${s.YTCall || 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.TCallPct || 0}</td>
+          <td class="px-2 py-1">${s.YTCall != null ? s.YTCall : 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.TCallPct != null ? s.TCallPct : 0}</td>
 
           <td class="px-2 py-1 border-l-2">${s.PDD}</td>
-          <td class="px-2 py-1">${s.YPDD || 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.PDDPct || 0}</td>
+          <td class="px-2 py-1">${s.YPDD != null ? s.YPDD : 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.PDDPct != null ? s.PDDPct : 0}</td>
 
           <td class="px-2 py-1 border-l">${s.ATime}</td>
-          <td class="px-2 py-1">${s.YATime || 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.ATimePct || 0}</td>
+          <td class="px-2 py-1">${s.YATime != null ? s.YATime : 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.ATimePct != null ? s.ATimePct : 0}</td>
 
           <td class="px-2 py-1 border-l">${s.ADur}</td>
-          <td class="px-2 py-1">${s.YADur || 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.ADurPct || 0}</td>
+          <td class="px-2 py-1">${s.YADur != null ? s.YADur : 0}</td>
+          <td class="px-2 py-1 bg-gray-50">${s.ADurPct != null ? s.ADurPct : 0}</td>
         </tr>
-      `).join("");
+      `;
+    }).join("");
 
-      // Insert supplier rows below the clicked row
-      currentRow.insertAdjacentHTML("afterend", rowsHTML);
+    // Insert rows after the clicked row
+    currentRow.insertAdjacentHTML("afterend", rowsHTML);
     }
 
   // Group data by customer + destination + supplier
@@ -515,9 +754,10 @@ function loadMetricsWithComparison(showTable = false) {
     });
 
     return Object.values(grouped).map(g => ({
+      customer: g.customer,
       supplier: g.supplier,
       destination: g.destination,
-      Min: g.seconds ? +(g.seconds / 60).toFixed(1) : 0,
+
       Min: g.seconds ? Math.round(g.seconds / 60) : 0,
       ACD: g.start_nuber ? +((g.seconds / g.start_nuber / 60).toFixed(1)) : 0,
       ASR: g.start_attempt ? Math.round((g.start_nuber / g.start_attempt) * 100) : 0,
@@ -525,8 +765,23 @@ function loadMetricsWithComparison(showTable = false) {
       TCall: g.start_attempt,
       PDD: g.count ? +(g.pdd_total / g.count / 1000).toFixed(1) : 0,
       ATime: g.count ? Math.round(g.answer_time_total / g.count) : 0,
-      ADur: g.count ? Math.round(g.duration_total / g.count) : 0
+      ADur: g.count ? +((g.duration_total / g.count / 60).toFixed(1)) : 0
     }));
+  }
+
+  let reverseMode = false;
+
+  function toggleReverse() {
+  reverseMode = !reverseMode;
+
+  const button = document.getElementById("reverseButton");
+    if (reverseMode) {
+      button.classList.remove("bg-gray-200");
+      button.classList.add("bg-gray-500", "text-white");
+    } else {
+      button.classList.remove("bg-gray-500", "text-white");
+      button.classList.add("bg-gray-200");
+    }
   }
 
     function loadMetrics(showTable = false) {
@@ -575,34 +830,23 @@ function loadMetricsWithComparison(showTable = false) {
         .catch(error => {
           console.error("Fetch error:", error);
           document.getElementById("tableBody").innerHTML = `<tr><td colspan="7" class="text-red-600 px-4 py-2">Request failed</td></tr>`;
-        });
+          });          
+
+
+          // Auto-hide time control panels when clicking outside
+          document.addEventListener("click", function (event) {
+          const fromPanel = document.getElementById("fromTimeControls");
+          const toPanel = document.getElementById("toTimeControls");
+          const fromInput = document.getElementById("fromTime");
+          const toInput = document.getElementById("toTime");
+
+          const isClickInsideFrom = fromInput.contains(event.target) || fromPanel.contains(event.target);
+          const isClickInsideTo = toInput.contains(event.target) || toPanel.contains(event.target);
+
+          if (!isClickInsideFrom) fromPanel.classList.add("hidden");
+          if (!isClickInsideTo) toPanel.classList.add("hidden");
+          });
     }
-
-  // Flag to track whether the swap is active
-  let swapActive = false;
-
-  function swapCustomerSupplier() {
-    const customer = document.getElementById("customerInput");
-    const supplier = document.getElementById("supplierInput");
-    const button = document.getElementById("swapButton");
-
-    // Swap the values of the input fields
-    const temp = customer.value;
-    customer.value = supplier.value;
-    supplier.value = temp;
-
-    // Toggle button style to visually indicate swap state
-    swapActive = !swapActive;
-    if (swapActive) {
-      // If swap is active, apply darker background and white text
-      button.classList.remove("bg-gray-200");
-      button.classList.add("bg-gray-500", "text-white");
-    } else {
-      // If swap is reset, revert to default style
-      button.classList.remove("bg-gray-500", "text-white");
-      button.classList.add("bg-gray-200");
-    }
-  }
 
     setDefaultDateRange();
     loadMetrics();
