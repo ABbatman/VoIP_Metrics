@@ -90,26 +90,35 @@
     <div id="summaryTable" class="bg-white rounded shadow hidden w-full mt-6">
       <table class="w-full table-auto">
         <thead class="text-xs text-gray-800">
+<tr>
+<thead class="text-xs text-gray-800">
   <tr>
-    <th id="thMain" class="px-2 py-2 text-left bg-gray-200 min-h-[24px]" rowspan="2">
-  <div class="flex items-center gap-1 min-h-[20px]">
-    Customer
-    <button onclick="sortByColumn('customer')" class="text-xs text-blue-400 hover:text-blue-600" title="Sort by customer">⬍</button>
+   <!-- Header cells: Customer, Supplier, Destination -->
+<th id="thMain" class="px-2 py-2 text-left bg-gray-200 w-[120px]" rowspan="2">
+  <div class="flex items-center justify-between w-full pr-2">
+    <span id="mainLabel">Customer</span>
+    <span id="mainSortIcon"></span>
   </div>
 </th>
 
-<th id="thPeer" class="px-2 py-2 text-left bg-gray-100 min-h-[24px]" rowspan="2">
-  <div class="flex items-center gap-1 min-h-[20px]">
-    Supplier
-    <button onclick="sortByColumn('supplier')" class="text-xs text-blue-400 hover:text-blue-600" title="Sort by supplier">⬍</button>
+<th id="thPeer" class="px-2 py-2 text-left bg-gray-100" rowspan="2">
+  <div class="flex items-center justify-between w-full pr-2">
+    <span id="peerLabel">Supplier</span>
+    <span id="peerSortIcon"></span>
   </div>
 </th>
 
-<th class="px-2 py-1 text-left bg-gray-50" rowspan="2">
-  <div class="flex items-center gap-1">
-    Destination
-    <button onclick="sortByColumn('destination')" class="text-xs text-blue-400 hover:text-blue-600" title="Sort by destination">⬍</button>
-  </div>
+<th class="relative px-2 py-2 text-left bg-gray-50 w-[220px]" rowspan="2">
+  Destination
+  <button
+    onclick="sortByColumn('destination')"
+    class="absolute right-1 top-1/2 -translate-y-1/2 text-blue-400 hover:text-blue-600"
+    title="Sort by destination"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5 5 5M7 13l5 5 5-5" />
+    </svg>
+  </button>
 </th>
 
     <th class="px-2 py-1 text-center border-l bg-gray-100" colspan="3">Min</th>
@@ -117,92 +126,151 @@
     <th class="px-2 py-1 text-center border-l bg-[#eaf1f7]" colspan="3">ASR</th>
     <th class="px-2 py-1 text-center border-l bg-gray-100" colspan="3">SCall</th>
     <th class="px-2 py-1 text-center border-l bg-[#eef1ec]" colspan="3">TCall</th>
-
     <th class="px-2 py-1 text-center border-l-2 bg-[#eaf1f7]" colspan="3">PDD</th>
     <th class="px-2 py-1 text-center border-l bg-gray-100" colspan="3">ATime</th>
-    <th class="px-2 py-1 text-center border-l bg-[#eef1ec]" colspan="3">ADur</th>
   </tr>
-  <tr>
-    <th class="px-2 py-1 border-l bg-white">
-      Now <button onclick="sortByColumn('Min')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort Min">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-50">
-      Y <button onclick="sortByColumn('YMin')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YMin">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-100">
-      % <button onclick="sortByColumn('MinPct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort Min %">⬍</button>
-    </th>
 
-    <th class="px-2 py-1 border-l bg-white">
-      Now <button onclick="sortByColumn('ACD')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ACD">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-50">
-      Y <button onclick="sortByColumn('YACD')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YACD">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-100">
-      % <button onclick="sortByColumn('ACDPct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ACD %">⬍</button>
-    </th>
+ <tr>
+  <!-- Min -->
+  <th class="px-2 py-1 border-l bg-white">
+    <div class="flex items-center justify-between">
+      <span>Now</span>
+      <button onclick="sortByColumn('Min')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort Min">⬍</button>
+    </div>
+  </th>
+  <th class="px-2 py-1 bg-gray-50">
+    <div class="flex items-center justify-between">
+      <span>Y</span>
+      <button onclick="sortByColumn('YMin')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort YMin">⬍</button>
+    </div>
+  </th>
+  <th class="px-2 py-1 bg-gray-100">
+    <div class="flex items-center justify-between">
+      <span>%</span>
+      <button onclick="sortByColumn('MinPct')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort Min %">⬍</button>
+    </div>
+  </th>
 
-    <th class="px-2 py-1 border-l bg-white">
-      Now <button onclick="sortByColumn('ASR')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ASR">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-50">
-      Y <button onclick="sortByColumn('YASR')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YASR">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-100">
-      % <button onclick="sortByColumn('ASRPct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ASR %">⬍</button>
-    </th>
+  <!-- ACD -->
+  <th class="px-2 py-1 border-l bg-white">
+    <div class="flex items-center justify-between">
+      <span>Now</span>
+      <button onclick="sortByColumn('ACD')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort ACD">⬍</button>
+    </div>
+  </th>
+  <th class="px-2 py-1 bg-gray-50">
+    <div class="flex items-center justify-between">
+      <span>Y</span>
+      <button onclick="sortByColumn('YACD')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort YACD">⬍</button>
+    </div>
+  </th>
+  <th class="px-2 py-1 bg-gray-100">
+    <div class="flex items-center justify-between">
+      <span>%</span>
+      <button onclick="sortByColumn('ACDPct')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort ACD %">⬍</button>
+    </div>
+  </th>
 
-    <th class="px-2 py-1 border-l bg-white">
-      Now <button onclick="sortByColumn('SCall')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort SCall">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-50">
-      Y <button onclick="sortByColumn('YSCall')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YSCall">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-100">
-      % <button onclick="sortByColumn('SCallPct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort SCall %">⬍</button>
-    </th>
+  <!-- ASR -->
+  <th class="px-2 py-1 border-l bg-white">
+    <div class="flex items-center justify-between">
+      <span>Now</span>
+      <button onclick="sortByColumn('ASR')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort ASR">⬍</button>
+    </div>
+  </th>
+  <th class="px-2 py-1 bg-gray-50">
+    <div class="flex items-center justify-between">
+      <span>Y</span>
+      <button onclick="sortByColumn('YASR')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort YASR">⬍</button>
+    </div>
+  </th>
+  <th class="px-2 py-1 bg-gray-100">
+    <div class="flex items-center justify-between">
+      <span>%</span>
+      <button onclick="sortByColumn('ASRPct')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort ASR %">⬍</button>
+    </div>
+  </th>
 
-    <th class="px-2 py-1 border-l bg-white">
-      Now <button onclick="sortByColumn('TCall')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort TCall">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-50">
-      Y <button onclick="sortByColumn('YTCall')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YTCall">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-100">
-      % <button onclick="sortByColumn('TCallPct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort TCall %">⬍</button>
-    </th>
+  <!-- SCall -->
+  <th class="px-2 py-1 border-l bg-white">
+    <div class="flex items-center justify-between">
+      <span>Now</span>
+      <button onclick="sortByColumn('SCall')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort SCall">⬍</button>
+    </div>
+  </th>
+  <th class="px-2 py-1 bg-gray-50">
+    <div class="flex items-center justify-between">
+      <span>Y</span>
+      <button onclick="sortByColumn('YSCall')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort YSCall">⬍</button>
+    </div>
+  </th>
+  <th class="px-2 py-1 bg-gray-100">
+    <div class="flex items-center justify-between">
+      <span>%</span>
+      <button onclick="sortByColumn('SCallPct')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort SCall %">⬍</button>
+    </div>
+  </th>
 
-    <th class="px-2 py-1 border-l-2 bg-white">
-      Now <button onclick="sortByColumn('PDD')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort PDD">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-50">
-      Y <button onclick="sortByColumn('YPDD')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YPDD">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-100">
-      % <button onclick="sortByColumn('PDDPct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort PDD %">⬍</button>
-    </th>
+  <!-- TCall -->
+  <th class="px-2 py-1 border-l bg-white">
+    <div class="flex items-center justify-between">
+      <span>Now</span>
+      <button onclick="sortByColumn('TCall')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort TCall">⬍</button>
+    </div>
+  </th>
+  <th class="px-2 py-1 bg-gray-50">
+    <div class="flex items-center justify-between">
+      <span>Y</span>
+      <button onclick="sortByColumn('YTCall')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort YTCall">⬍</button>
+    </div>
+  </th>
+  <th class="px-2 py-1 bg-gray-100">
+    <div class="flex items-center justify-between">
+      <span>%</span>
+      <button onclick="sortByColumn('TCallPct')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort TCall %">⬍</button>
+    </div>
+  </th>
 
-    <th class="px-2 py-1 border-l bg-white">
-      Now <button onclick="sortByColumn('ATime')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ATime">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-50">
-      Y <button onclick="sortByColumn('YATime')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YATime">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-100">
-      % <button onclick="sortByColumn('ATimePct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ATime %">⬍</button>
-    </th>
+  <!-- PDD -->
+  <th class="px-2 py-1 border-l-2 bg-white">
+    <div class="flex items-center justify-between">
+      <span>Now</span>
+      <button onclick="sortByColumn('PDD')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort PDD">⬍</button>
+    </div>
+  </th>
+  <th class="px-2 py-1 bg-gray-50">
+    <div class="flex items-center justify-between">
+      <span>Y</span>
+      <button onclick="sortByColumn('YPDD')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort YPDD">⬍</button>
+    </div>
+  </th>
+  <th class="px-2 py-1 bg-gray-100">
+    <div class="flex items-center justify-between">
+      <span>%</span>
+      <button onclick="sortByColumn('PDDPct')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort PDD %">⬍</button>
+    </div>
+  </th>
 
-    <th class="px-2 py-1 border-l bg-white">
-      Now <button onclick="sortByColumn('ADur')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ADur">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-50">
-      Y <button onclick="sortByColumn('YADur')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort YADur">⬍</button>
-    </th>
-    <th class="px-2 py-1 bg-gray-100">
-      % <button onclick="sortByColumn('ADurPct')" class="ml-1 text-xs text-blue-400 hover:text-blue-600" title="Sort ADur %">⬍</button>
-    </th>
-  </tr>
+  <!-- ATime -->
+  <th class="px-2 py-1 border-l bg-white">
+    <div class="flex items-center justify-between">
+      <span>Now</span>
+      <button onclick="sortByColumn('ATime')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort ATime">⬍</button>
+    </div>
+  </th>
+  <th class="px-2 py-1 bg-gray-50">
+    <div class="flex items-center justify-between">
+      <span>Y</span>
+      <button onclick="sortByColumn('YATime')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort YATime">⬍</button>
+    </div>
+  </th>
+  <th class="px-2 py-1 bg-gray-100">
+    <div class="flex items-center justify-between">
+      <span>%</span>
+      <button onclick="sortByColumn('ATimePct')" class="text-xs text-blue-400 hover:text-blue-600 ml-1" title="Sort ATime %">⬍</button>
+    </div>
+  </th>
+</tr>
 </thead>
         <tbody id="tableBody" class="divide-y divide-gray-100"></tbody>
       </table>
@@ -425,38 +493,33 @@ function groupBySupplierDestination(data) {
 function loadMetricsWithComparison(showTable = false) {
   console.log("🟡 reverseMode =", reverseMode);
 
+  // Hide summary table if not requested
   if (!showTable) {
     document.getElementById("summaryTable").classList.add("hidden");
   }
 
-  const thMain = document.getElementById("thMain");
-  const thPeer = document.getElementById("thPeer");
+  // Update table header labels and sort icons
+  updateSortIcons();
 
-  if (reverseMode) {
-    thMain.textContent = "Supplier";
-    thPeer.textContent = "Customer";
-  } else {
-    thMain.textContent = "Customer";
-    thPeer.textContent = "Supplier";
-  }
-
+  // Collect input filter values
   const customer = document.getElementById("customerInput").value.trim();
   const supplier = document.getElementById("supplierInput").value.trim();
   const destination = document.getElementById("destinationInput").value.trim();
   const from = document.getElementById("fromDate").value + 'T' + document.getElementById("fromTime").value;
   const to = document.getElementById("toDate").value + 'T' + document.getElementById("toTime").value;
 
-  const fromDateObj = new Date(from);
-  const toDateObj = new Date(to);
-  const from_y = new Date(fromDateObj.getTime() - 24 * 60 * 60 * 1000).toISOString();
-  const to_y = new Date(toDateObj.getTime() - 24 * 60 * 60 * 1000).toISOString();
+  // Calculate 24h ago time range
+  const from_y = new Date(new Date(from).getTime() - 24 * 60 * 60 * 1000).toISOString();
+  const to_y = new Date(new Date(to).getTime() - 24 * 60 * 60 * 1000).toISOString();
 
+  // Prepare URL query strings
   const paramsToday = new URLSearchParams({ customer, supplier, destination, from, to });
   const paramsYesterday = new URLSearchParams({ customer, supplier, destination, from: from_y, to: to_y });
 
+  // Fetch both datasets (today and yesterday)
   Promise.all([
-    fetch(`/api/metrics?${paramsToday.toString()}`).then(res => res.json()),
-    fetch(`/api/metrics?${paramsYesterday.toString()}`).then(res => res.json())
+    fetch(`/api/metrics?${paramsToday}`).then(r => r.json()),
+    fetch(`/api/metrics?${paramsYesterday}`).then(r => r.json())
   ])
   .then(([current, yesterday]) => {
     allSupplierData = current;
@@ -471,128 +534,20 @@ function loadMetricsWithComparison(showTable = false) {
 
     finalTable = mergeAndCompare(groupedCurrent, groupedYesterday);
 
-    // Always render table
-    renderTable();
-
-    // Show the table if requested
     if (showTable) {
-      document.getElementById("summaryTable").classList.remove("hidden");
-    }
+  renderTable(); // Show table only if explicitly requested
+  document.getElementById("summaryTable").classList.remove("hidden");
+} else {
+  // Hide table if user only clicked "Find"
+  document.getElementById("summaryTable").classList.add("hidden");
+}
   })
   .catch(error => {
-    console.error("Error loading metrics:", error);
+    console.error("❌ Error loading metrics:", error);
   });
 }
     
-    // Store the final table data globally to reuse it for sorting
-    let finalTable = [];
-
-    // Track current sorting state
-    let currentSort = {
-      column: null,
-      asc: true
-    };
-
-    // Sort finalTable by selected column and direction
-    function sortByColumn(column) {
-      // Do nothing if there is no data
-      if (!finalTable.length) return;
-
-      // Toggle sort direction if clicking the same column again
-      if (currentSort.column === column) {
-        currentSort.asc = !currentSort.asc;
-      } else {
-        currentSort.column = column;
-        currentSort.asc = true;
-      }
-
-    // Perform sorting
-    finalTable.sort((a, b) => {
-      const valA = a[column];
-      const valB = b[column];
-
-      // Move null/undefined to the bottom
-      if (valA == null) return 1;
-      if (valB == null) return -1;
-
-      // If numbers, do numeric sort
-      if (typeof valA === "number" && typeof valB === "number") {
-        return currentSort.asc ? valA - valB : valB - valA;
-      }
-
-      // Otherwise, do alphabetical sort
-      return currentSort.asc
-        ? String(valA).localeCompare(String(valB))
-        : String(valB).localeCompare(String(valA));
-    });
-    renderTable();
-  }
-  
-
-  function renderTable() {
-  const table = document.getElementById("tableBody");
-  table.innerHTML = "";
-  // Loop through all rows and render them
-  finalTable.forEach(row => {
-      const main = reverseMode ? row.supplier : row.customer;
-      const peer = reverseMode ? row.customer : row.supplier;
-
-        table.innerHTML += `
-          <tr class="hover:bg-gray-200 text-sm text-right">
-            <td class="px-2 py-1 text-left">
-              <button
-                class="text-sm text-blue-600 hover:no-underline mr-1"
-                data-main="${main}"
-                data-destination="${row.destination}"
-                onclick="toggleSuppliers(this)"
-              >
-                +
-              </button>
-              ${main}
-            </td>
-
-            <td class="px-2 py-1 text-left">${peer || ""}</td>
-            <td class="px-2 py-1 text-left">${row.destination}</td>
-
-            <td class="px-2 py-1 border-l">${row.Min}</td>
-            <td class="px-2 py-1">${row.YMin != null ? row.YMin : 0}</td>
-            <td class="px-2 py-1 bg-gray-50">${row.MinPct != null ? row.MinPct : 0}</td>
-
-            <td class="px-2 py-1 border-l">${row.ACD}</td>
-            <td class="px-2 py-1">${row.YACD != null ? row.YACD : 0}</td>
-            <td class="px-2 py-1 bg-gray-50">${row.ACDPct != null ? row.ACDPct : 0}</td>
-
-            <td class="px-2 py-1 border-l">${row.ASR}</td>
-            <td class="px-2 py-1">${row.YASR != null ? row.YASR : 0}</td>
-            <td class="px-2 py-1 bg-gray-50">${row.ASRPct != null ? row.ASRPct : 0}</td>
-
-            <td class="px-2 py-1 border-l">${row.SCall}</td>
-            <td class="px-2 py-1">${row.YSCall != null ? row.YSCall : 0}</td>
-            <td class="px-2 py-1 bg-gray-50">${row.SCallPct != null ? row.SCallPct : 0}</td>
-
-            <td class="px-2 py-1 border-l">${row.TCall}</td>
-            <td class="px-2 py-1">${row.YTCall != null ? row.YTCall : 0}</td>
-            <td class="px-2 py-1 bg-gray-50">${row.TCallPct != null ? row.TCallPct : 0}</td>
-
-            <td class="px-2 py-1 border-l-2">${row.PDD}</td>
-            <td class="px-2 py-1">${row.YPDD != null ? row.YPDD : 0}</td>
-            <td class="px-2 py-1 bg-gray-50">${row.PDDPct != null ? row.PDDPct : 0}</td>
-
-            <td class="px-2 py-1 border-l">${row.ATime}</td>
-            <td class="px-2 py-1">${row.YATime != null ? row.YATime : 0}</td>
-            <td class="px-2 py-1 bg-gray-50">${row.ATimePct != null ? row.ATimePct : 0}</td>
-
-            <td class="px-2 py-1 border-l">${row.ADur}</td>
-            <td class="px-2 py-1">${row.YADur != null ? row.YADur : 0}</td>
-            <td class="px-2 py-1 bg-gray-50">${row.ADurPct != null ? row.ADurPct : 0}</td>
-          </tr>
-        `;
-      });
-
-      // Make sure the table is visible
-      document.getElementById("summaryTable").classList.remove("hidden");
-    }
-
+    
     function showTimeControls(id) {
       document.getElementById(id).classList.remove("hidden");
     }
@@ -631,99 +586,230 @@ function loadMetricsWithComparison(showTable = false) {
       document.getElementById("toTime").value = now.toISOString().slice(11, 19);
     }
 
-    function toggleSuppliers(button) {
-      const main = button.dataset.main;
-      const destination = button.dataset.destination;
-      const currentRow = button.closest("tr");
+function toggleSuppliers(button) {
+  const main = button.dataset.main;
+  const destination = button.dataset.destination;
+  const currentRow = button.closest("tr");
 
-      console.log("🔍 Expand requested:");
-      console.log("Mode:", reverseMode ? "Supplier → Customers" : "Customer → Suppliers");
-      console.log("Main:", main, "Destination:", destination);
+  console.log("🔍 Expand requested:");
+  console.log("Mode:", reverseMode ? "Supplier → Customers" : "Customer → Suppliers");
+  console.log("Main:", main, "Destination:", destination);
 
-      // Collapse if already expanded
-      let next = currentRow.nextElementSibling;
-      let found = false;
-      while (next && next.classList) {
-        if (next.classList.contains("supplier-row")) {
-          found = true;
-          next.remove();
-          next = currentRow.nextElementSibling;
-        } else {
-          break;
-        }
-      }
+  // Check if current row is already expanded (has any supplier-row after it)
+  let next = currentRow.nextElementSibling;
+  let isAlreadyExpanded = false;
+  while (next && next.classList.contains("supplier-row")) {
+    isAlreadyExpanded = true;
+    break;
+  }
 
-      if (found) {
-        button.textContent = "+";
-        return;
-      }
+  // Always remove all open supplier and hourly rows
+  document.querySelectorAll(".supplier-row, .hourly-row").forEach(row => row.remove());
 
-      // Expand now
-      button.textContent = "−";
+  // Reset all main row expand buttons to "+"
+  document.querySelectorAll("button[data-main]").forEach(btn => {
+    btn.textContent = "+";
+  });
 
-      // Filter data
-      const filtered = reverseMode
-        ? allSupplierData.filter(row =>
-          row.supplier === main && row.destination === destination)
-        : allSupplierData.filter(row =>
-          row.customer === main && row.destination === destination);
+  // If the current row was expanded, do not expand again
+  if (isAlreadyExpanded) return;
 
-      // Group filtered rows
-      const grouped = reverseMode
-        ? groupBySupplierDestinationCustomer(filtered)
-        : groupByCustomerDestinationSupplier(filtered);
+  // Mark current button as expanded
+  button.textContent = "−";
 
-      // Debug output only
-      console.log("Grouped rows:", grouped);
+  // Filter rows based on current mode
+  const filtered = reverseMode
+    ? allSupplierData.filter(row =>
+        row.supplier === main && row.destination === destination)
+    : allSupplierData.filter(row =>
+        row.customer === main && row.destination === destination);
 
-    // Render expandable rows
-    const rowsHTML = grouped.map(s => {
-      const name = reverseMode ? s.customer : s.supplier;
+  // Group the filtered data
+  const grouped = reverseMode
+    ? groupBySupplierDestinationCustomer(filtered)
+    : groupByCustomerDestinationSupplier(filtered);
 
-      return `
-        <tr class="supplier-row bg-gray-100 hover:bg-gray-200 text-sm text-black text-right border-t border-dashed border-gray-300">
-          <td></td>
-          <td class="px-2 py-1 text-left">${name}</td>
-          <td class="px-2 py-1 text-left">${s.destination}</td>
+  console.log("Grouped rows:", grouped);
 
-          <td class="px-2 py-1 border-l">${s.Min}</td>
-          <td class="px-2 py-1">${s.YMin != null ? s.YMin : 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.MinPct != null ? s.MinPct : 0}</td>
+  // Build HTML for inserted rows
+  const rowsHTML = grouped.map(s => {
+    const name = reverseMode ? s.customer : s.supplier;
 
-          <td class="px-2 py-1 border-l">${s.ACD}</td>
-          <td class="px-2 py-1">${s.YACD != null ? s.YACD : 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.ACDPct != null ? s.ACDPct : 0}</td>
+    return `
+  <tr class="supplier-row bg-gray-100 hover:bg-gray-200 text-sm text-black text-right border-t border-dashed border-gray-300">
+    
+    <!-- First column: EMPTY to avoid duplication -->
+    <td></td>
 
-          <td class="px-2 py-1 border-l">${s.ASR}</td>
-          <td class="px-2 py-1">${s.YASR != null ? s.YASR : 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.ASRPct != null ? s.ASRPct : 0}</td>
+    <!-- Second column: peer (client or supplier) with + -->
+    <td class="px-2 py-1 text-left">
+      <div class="flex items-center gap-0 pl-1">
+        <button
+          class="text-sm text-blue-600 hover:no-underline"
+          data-main="${main}"
+          data-peer="${name}"
+          data-destination="${s.destination}"
+          onclick="toggleHourly(this)"
+        >
+          +
+        </button>
+        <span class="ml-1">${name}</span>
+      </div>
+    </td>
 
-          <td class="px-2 py-1 border-l">${s.SCall}</td>
-          <td class="px-2 py-1">${s.YSCall != null ? s.YSCall : 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.SCallPct != null ? s.SCallPct : 0}</td>
+    <!-- Third column: Destination -->
+    <td class="px-2 py-1 text-left text-gray-500">${s.destination}</td>
 
-          <td class="px-2 py-1 border-l">${s.TCall}</td>
-          <td class="px-2 py-1">${s.YTCall != null ? s.YTCall : 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.TCallPct != null ? s.TCallPct : 0}</td>
+    <!-- Metrics -->
+    <td class="px-2 py-1 border-l">${s.Min}</td>
+    <td class="px-2 py-1">${s.YMin ?? 0}</td>
+    <td class="px-2 py-1 bg-gray-50">${s.MinPct ?? 0}</td>
 
-          <td class="px-2 py-1 border-l-2">${s.PDD}</td>
-          <td class="px-2 py-1">${s.YPDD != null ? s.YPDD : 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.PDDPct != null ? s.PDDPct : 0}</td>
+    <td class="px-2 py-1 border-l">${s.ACD}</td>
+    <td class="px-2 py-1">${s.YACD ?? 0}</td>
+    <td class="px-2 py-1 bg-gray-50">${s.ACDPct ?? 0}</td>
 
-          <td class="px-2 py-1 border-l">${s.ATime}</td>
-          <td class="px-2 py-1">${s.YATime != null ? s.YATime : 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.ATimePct != null ? s.ATimePct : 0}</td>
+    <td class="px-2 py-1 border-l">${s.ASR}</td>
+    <td class="px-2 py-1">${s.YASR ?? 0}</td>
+    <td class="px-2 py-1 bg-gray-50">${s.ASRPct ?? 0}</td>
 
-          <td class="px-2 py-1 border-l">${s.ADur}</td>
-          <td class="px-2 py-1">${s.YADur != null ? s.YADur : 0}</td>
-          <td class="px-2 py-1 bg-gray-50">${s.ADurPct != null ? s.ADurPct : 0}</td>
-        </tr>
-      `;
+    <td class="px-2 py-1 border-l">${s.SCall}</td>
+    <td class="px-2 py-1">${s.YSCall ?? 0}</td>
+    <td class="px-2 py-1 bg-gray-50">${s.SCallPct ?? 0}</td>
+
+    <td class="px-2 py-1 border-l">${s.TCall}</td>
+    <td class="px-2 py-1">${s.YTCall ?? 0}</td>
+    <td class="px-2 py-1 bg-gray-50">${s.TCallPct ?? 0}</td>
+
+    <td class="px-2 py-1 border-l-2">${s.PDD}</td>
+    <td class="px-2 py-1">${s.YPDD ?? 0}</td>
+    <td class="px-2 py-1 bg-gray-50">${s.PDDPct ?? 0}</td>
+
+    <td class="px-2 py-1 border-l">${s.ATime}</td>
+    <td class="px-2 py-1">${s.YATime ?? 0}</td>
+    <td class="px-2 py-1 bg-gray-50">${s.ATimePct ?? 0}</td>
+  </tr>
+`;
     }).join("");
 
     // Insert rows after the clicked row
     currentRow.insertAdjacentHTML("afterend", rowsHTML);
     }
+
+  function toggleHourly(button) {
+  const currentRow = button.closest("tr");
+
+  // Remove all rows with class hourly-row until reaching something else
+  let next = currentRow.nextElementSibling;
+  let hasRemoved = false;
+
+  while (next && next.classList.contains("hourly-row")) {
+    const toRemove = next;
+    next = next.nextElementSibling;
+    toRemove.remove();
+    hasRemoved = true;
+  }
+
+  if (hasRemoved) {
+    button.textContent = "+";
+    return;
+  }
+
+  button.textContent = "−";
+
+  const main = button.dataset.main;
+  const peer = button.dataset.peer;
+  const destination = button.dataset.destination;
+  const nameToShowInPeer = reverseMode ? peer : peer;
+
+  const from = new Date(document.getElementById("fromDate").value + "T" + document.getElementById("fromTime").value);
+  const to = new Date(document.getElementById("toDate").value + "T" + document.getElementById("toTime").value);
+
+  const filtered = allSupplierData.filter(row =>
+    row.customer === (reverseMode ? peer : main) &&
+    row.supplier === (reverseMode ? main : peer) &&
+    row.destination === destination
+  );
+
+  const hourlyMap = {};
+
+  filtered.forEach(row => {
+    const hour = new Date(row.time);
+    hour.setMinutes(0, 0, 0);
+    const hourKey = hour.toISOString().slice(11, 16);
+
+    if (!hourlyMap[hourKey]) {
+      hourlyMap[hourKey] = {
+        hour: hourKey,
+        destination: row.destination,
+        seconds: 0,
+        start_nuber: 0,
+        start_attempt: 0,
+        pdd_total: 0,
+        answer_time_total: 0,
+        count: 0
+      };
+    }
+
+    const g = hourlyMap[hourKey];
+    g.seconds += Number(row.seconds || 0);
+    g.start_nuber += Number(row.start_nuber || 0);
+    g.start_attempt += Number(row.start_attempt || 0);
+    g.pdd_total += Number(row.pdd || 0);
+    g.answer_time_total += Number(row.answer_time || 0);
+    g.count += 1;
+  });
+
+  const rows = Object.values(hourlyMap).sort((a, b) => a.hour.localeCompare(b.hour)).map(h => {
+  const Min = h.seconds ? Math.round(h.seconds / 60) : 0;
+  const ACD = h.start_nuber ? +((h.seconds / h.start_nuber / 60).toFixed(1)) : 0;
+  const ASR = h.start_attempt ? Math.round((h.start_nuber / h.start_attempt) * 100) : 0;
+  const PDD = h.count ? +(h.pdd_total / h.count / 1000).toFixed(1) : 0;
+  const ATime = h.count ? Math.round(h.answer_time_total / h.count) : 0;
+
+  return `
+    <tr class="hourly-row text-sm text-right bg-gray-50 border-t border-dashed border-gray-300">
+      <!-- Column: main (indented hour) -->
+      <td class="px-2 py-1 text-xs text-gray-500">
+        <div class="flex justify-end pr-2">${h.hour}</div>
+      </td>
+
+      <!-- Column: supplier or customer -->
+      <td class="px-2 py-1 text-left text-gray-500 text-xs">
+        ${peer}
+      </td>
+
+      <!-- Column: destination -->
+      <td class="px-2 py-1 text-left text-gray-500 text-xs">${h.destination}</td>
+
+      <!-- Metrics -->
+      <td class="px-2 py-1 border-l">${Min}</td>
+      <td class="px-2 py-1">-</td>
+      <td class="px-2 py-1 bg-gray-50">-</td>
+      <td class="px-2 py-1">${ACD}</td>
+      <td class="px-2 py-1">-</td>
+      <td class="px-2 py-1 bg-gray-50">-</td>
+      <td class="px-2 py-1">${ASR}</td>
+      <td class="px-2 py-1">-</td>
+      <td class="px-2 py-1 bg-gray-50">-</td>
+      <td class="px-2 py-1">${h.start_nuber}</td>
+      <td class="px-2 py-1">-</td>
+      <td class="px-2 py-1 bg-gray-50">-</td>
+      <td class="px-2 py-1">${h.start_attempt}</td>
+      <td class="px-2 py-1">-</td>
+      <td class="px-2 py-1 bg-gray-50">-</td>
+      <td class="px-2 py-1 border-l-2">${PDD}</td>
+      <td class="px-2 py-1">-</td>
+      <td class="px-2 py-1 bg-gray-50">-</td>
+      <td class="px-2 py-1">${ATime}</td>
+      <td class="px-2 py-1">-</td>
+      <td class="px-2 py-1 bg-gray-50">-</td>
+    </tr>
+  `;
+}).join("");
+
+  currentRow.insertAdjacentHTML("afterend", rows);
+}
 
   // Group data by customer + destination + supplier
   function groupByCustomerDestinationSupplier(data) {
@@ -769,6 +855,118 @@ function loadMetricsWithComparison(showTable = false) {
     }));
   }
 
+// Store the final table data globally to reuse it for sorting
+let finalTable = [];
+
+// Track current sorting state
+let currentSort = {
+  column: null,
+  asc: true
+};
+
+// Sort finalTable by selected column and direction
+function sortByColumn(column) {
+  // Do nothing if there is no data
+  if (!finalTable.length) return;
+
+  // Toggle sort direction if clicking the same column again
+  if (currentSort.column === column) {
+    currentSort.asc = !currentSort.asc;
+  } else {
+    currentSort.column = column;
+    currentSort.asc = true;
+  }
+
+  // Perform sorting
+  finalTable.sort((a, b) => {
+    const valA = a[column];
+    const valB = b[column];
+
+    // Move null/undefined to the bottom
+    if (valA == null) return 1;
+    if (valB == null) return -1;
+
+    // If numbers, do numeric sort
+    if (typeof valA === "number" && typeof valB === "number") {
+      return currentSort.asc ? valA - valB : valB - valA;
+    }
+
+    // Otherwise, do alphabetical sort
+    return currentSort.asc
+      ? String(valA).localeCompare(String(valB))
+      : String(valB).localeCompare(String(valA));
+  });
+
+  // Re-render the table with sorted data
+  renderTable();
+}
+
+  // Renders the summary table from the global finalTable array
+  function renderTable() {
+  // Get reference to table body and clear it
+  const table = document.getElementById("tableBody");
+  table.innerHTML = "";
+
+  // Loop through all rows and render them
+  finalTable.forEach(row => {
+    const main = reverseMode ? row.supplier : row.customer;
+    const peer = reverseMode ? row.customer : row.supplier;
+
+    table.innerHTML += `
+      <tr class="hover:bg-gray-200 text-sm text-right">
+        <td class="px-2 py-1 text-left">
+  <div class="flex items-center gap-1">
+    <button
+      class="text-sm text-blue-600 hover:no-underline"
+      data-main="${main}"
+      data-destination="${row.destination}"
+      onclick="toggleSuppliers(this)"
+    >
+      +
+    </button>
+    <span>${main}</span>
+  </div>
+</td>
+
+        <td class="px-2 py-1 text-left">${peer || ""}</td>
+        <td class="px-2 py-1 text-left">${row.destination}</td>
+
+        <td class="px-2 py-1 border-l">${row.Min}</td>
+        <td class="px-2 py-1">${row.YMin != null ? row.YMin : 0}</td>
+        <td class="px-2 py-1 bg-gray-50">${row.MinPct != null ? row.MinPct : 0}</td>
+
+        <td class="px-2 py-1 border-l">${row.ACD}</td>
+        <td class="px-2 py-1">${row.YACD != null ? row.YACD : 0}</td>
+        <td class="px-2 py-1 bg-gray-50">${row.ACDPct != null ? row.ACDPct : 0}</td>
+
+        <td class="px-2 py-1 border-l">${row.ASR}</td>
+        <td class="px-2 py-1">${row.YASR != null ? row.YASR : 0}</td>
+        <td class="px-2 py-1 bg-gray-50">${row.ASRPct != null ? row.ASRPct : 0}</td>
+
+        <td class="px-2 py-1 border-l">${row.SCall}</td>
+        <td class="px-2 py-1">${row.YSCall != null ? row.YSCall : 0}</td>
+        <td class="px-2 py-1 bg-gray-50">${row.SCallPct != null ? row.SCallPct : 0}</td>
+
+        <td class="px-2 py-1 border-l">${row.TCall}</td>
+        <td class="px-2 py-1">${row.YTCall != null ? row.YTCall : 0}</td>
+        <td class="px-2 py-1 bg-gray-50">${row.TCallPct != null ? row.TCallPct : 0}</td>
+
+        <td class="px-2 py-1 border-l-2">${row.PDD}</td>
+        <td class="px-2 py-1">${row.YPDD != null ? row.YPDD : 0}</td>
+        <td class="px-2 py-1 bg-gray-50">${row.PDDPct != null ? row.PDDPct : 0}</td>
+
+        <td class="px-2 py-1 border-l">${row.ATime}</td>
+        <td class="px-2 py-1">${row.YATime != null ? row.YATime : 0}</td>
+        <td class="px-2 py-1 bg-gray-50">${row.ATimePct != null ? row.ATimePct : 0}</td>
+
+      </tr>
+    `;
+  });
+  // Make sure the table is visible
+  document.getElementById("summaryTable").classList.remove("hidden");
+  // After rendering the table, update sorting buttons in the header
+}
+
   let reverseMode = false;
 
   function toggleReverse() {
@@ -783,6 +981,40 @@ function loadMetricsWithComparison(showTable = false) {
       button.classList.add("bg-gray-200");
     }
   }
+
+  // Render correct sort buttons depending on reverseMode state
+function updateSortIcons() {
+  const mainLabel = document.getElementById("mainLabel");
+  const peerLabel = document.getElementById("peerLabel");
+  const mainIcon = document.getElementById("mainSortIcon");
+  const peerIcon = document.getElementById("peerSortIcon");
+
+  if (reverseMode) {
+    mainLabel.textContent = "Supplier";
+    mainIcon.innerHTML = getSortButtonHTML("supplier");
+
+    peerLabel.textContent = "Customer";
+    peerIcon.innerHTML = getSortButtonHTML("customer");
+  } else {
+    mainLabel.textContent = "Customer";
+    mainIcon.innerHTML = getSortButtonHTML("customer");
+
+    peerLabel.textContent = "Supplier";
+    peerIcon.innerHTML = getSortButtonHTML("supplier");
+  }
+}
+
+// Generate sort button HTML for a given field
+function getSortButtonHTML(field) {
+  return `
+    <button onclick="sortByColumn('${field}')" class="text-blue-400 hover:text-blue-600" title="Sort ${field}">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5 5 5M7 13l5 5 5-5" />
+      </svg>
+    </button>
+  `;
+}
+
 
     function loadMetrics(showTable = false) {
       const params = new URLSearchParams({
